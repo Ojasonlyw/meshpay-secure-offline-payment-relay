@@ -1,0 +1,607 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Dashboard | UPI Offline Mesh</title>
+    <link
+      rel="stylesheet"
+      href="/css/dashboard.css"
+      th:href="@{/css/dashboard.css}"
+    />
+    <script
+      defer
+      src="/vendor/lucide.min.js"
+      th:src="@{/vendor/lucide.min.js}"
+    ></script>
+    <script defer src="/js/dashboard.js" th:src="@{/js/dashboard.js}"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to dashboard</a>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview">
+        <span class="brand-mark"><i data-lucide="asterisk"></i></span>
+        <span>MeshPay</span>
+      </a>
+      <button
+        class="sidebar-collapse"
+        type="button"
+        aria-label="Collapse navigation"
+      >
+        <i data-lucide="panel-left-close"></i>
+      </button>
+      <nav class="nav-groups">
+        <section aria-label="General">
+          <p class="nav-label">GENERAL</p>
+          <a class="nav-link active" href="#overview" aria-current="location"
+            ><i data-lucide="home"></i><span>Home</span></a
+          >
+          <a class="nav-link" href="#accounts"
+            ><i data-lucide="wallet-cards"></i><span>Accounts</span></a
+          >
+          <a class="nav-link" href="#transactions"
+            ><i data-lucide="arrow-left-right"></i><span>Transactions</span
+            ><span class="nav-badge" id="tx-count">0</span></a
+          >
+        </section>
+        <section aria-label="Tools">
+          <p class="nav-label">TOOLS</p>
+          <a class="nav-link" href="#payment-panel"
+            ><i data-lucide="send"></i><span>Payments</span></a
+          >
+          <a class="nav-link" href="#mesh"
+            ><i data-lucide="radio-tower"></i><span>Mesh bridge</span></a
+          >
+          <a class="nav-link" href="#accounts"
+            ><i data-lucide="users"></i><span>Recipients</span></a
+          >
+          <a class="nav-link" href="#overview"
+            ><i data-lucide="shield"></i><span>Vaults</span></a
+          >
+        </section>
+        <section aria-label="Insights">
+          <p class="nav-label">INSIGHTS</p>
+          <a class="nav-link" href="#activity"
+            ><i data-lucide="activity"></i><span>Activity</span></a
+          >
+          <a class="nav-link" href="#analytics"
+            ><i data-lucide="bar-chart-3"></i><span>Analytics</span></a
+          >
+          <a class="nav-link" href="#activity"
+            ><i data-lucide="notebook-tabs"></i><span>Reports</span></a
+          >
+        </section>
+        <section aria-label="Other">
+          <p class="nav-label">OTHER</p>
+          <a class="nav-link" href="#mesh"
+            ><i data-lucide="badge-indian-rupee"></i><span>Earn</span></a
+          >
+          <a class="nav-link" href="#activity"
+            ><i data-lucide="receipt-text"></i><span>Invoices</span></a
+          >
+        </section>
+      </nav>
+      <div class="sidebar-footer">
+        <span class="upgrade-icon"><i data-lucide="zap"></i></span>
+        <span
+          ><strong>Bridge mode</strong
+          ><small>Offline UPI mesh unlock</small></span
+        >
+      </div>
+    </aside>
+    <button
+      class="drawer-backdrop"
+      id="drawer-backdrop"
+      aria-label="Close navigation"
+      hidden
+    ></button>
+    <div class="page">
+      <header class="topbar">
+        <div class="breadcrumb">
+          <button
+            class="icon-button menu-toggle"
+            id="menu-toggle"
+            aria-label="Open navigation"
+            aria-expanded="false"
+            aria-controls="sidebar"
+          >
+            <i data-lucide="menu"></i>
+          </button>
+          <span>Dashboard</span><span class="slash">/</span
+          ><strong>Home</strong>
+        </div>
+        <label class="command-search">
+          <i data-lucide="search"></i>
+          <input id="command-search" type="search" placeholder="Search or type command" aria-label="Search dashboard" />
+          <span>Ctrl</span><kbd>K</kbd>
+        </label>
+        <div class="topbar-right">
+          <button class="icon-button" id="applications-button" type="button" aria-label="Applications">
+            <i data-lucide="layout-grid"></i>
+          </button>
+          <button class="icon-button" id="notifications-button" type="button" aria-label="Notifications">
+            <i data-lucide="bell"></i>
+          </button>
+          <button class="icon-button" id="messages-button" type="button" aria-label="Messages">
+            <i data-lucide="message-square"></i>
+          </button>
+          <span class="connection" id="connection" role="status"
+            ><span class="live-dot"></span
+            ><span id="connection-text">Connecting</span></span
+          >
+          <span class="avatar" aria-label="Demo workspace">UP</span>
+        </div>
+      </header>
+      <main id="main">
+        <section id="overview" class="hero-grid" aria-labelledby="page-title">
+          <div class="balance-panel reveal">
+            <p class="crumbline">UPI Offline Mesh / Home</p>
+            <p class="eyebrow">Total balance</p>
+            <div class="balance-row">
+              <h1 id="page-title"><span id="total-balance">--</span></h1>
+              <span class="trend positive">+ mesh ready</span>
+            </div>
+            <div class="balance-meta">
+              <span><i data-lucide="circle-dot"></i> Cash: demo ledger</span>
+              <span><i data-lucide="circle-dot"></i> Crypto: mesh packets</span>
+              <span id="last-updated">Awaiting first update</span>
+            </div>
+            <div class="hero-actions">
+              <a class="button primary" href="#accounts"
+                ><i data-lucide="plus"></i><span>View accounts</span></a
+              >
+              <a class="button secondary" href="#payment-panel"
+                ><i data-lucide="arrow-up-right"></i><span>Send</span></a
+              >
+              <button
+                class="button secondary"
+                id="refresh"
+                type="button"
+                aria-label="Refresh dashboard"
+              >
+                <i data-lucide="refresh-cw"></i><span>Connect</span>
+              </button>
+            </div>
+          </div>
+          <div class="asset-strip reveal">
+            <article class="asset-card">
+              <div>
+                <span class="coin">UPI</span
+                ><strong id="device-count">--</strong>
+              </div>
+              <span class="trend positive">devices</span
+              ><svg viewBox="0 0 120 44" aria-hidden="true">
+                <path d="M4 31 C21 20 30 36 44 25 S68 10 82 18 101 30 116 13" />
+              </svg>
+            </article>
+            <article class="asset-card">
+              <div>
+                <span class="coin">NET</span
+                ><strong id="bridge-count">--</strong>
+              </div>
+              <span class="trend positive">bridges</span
+              ><svg viewBox="0 0 120 44" aria-hidden="true">
+                <path d="M4 27 C23 28 28 16 42 18 S64 34 77 22 98 9 116 18" />
+              </svg>
+            </article>
+            <article class="asset-card">
+              <div>
+                <span class="coin">PKT</span
+                ><strong id="packet-count">--</strong>
+              </div>
+              <span class="trend danger">routes</span
+              ><svg viewBox="0 0 120 44" aria-hidden="true">
+                <path d="M4 13 C21 22 31 7 45 17 S68 33 81 24 96 22 116 36" />
+              </svg>
+            </article>
+            <button class="asset-card add-card" type="button" id="add-route">
+              <i data-lucide="plus"></i
+              ><span>Add another route<br />to your offline mesh</span>
+            </button>
+          </div>
+        </section>
+        <div
+          id="notice"
+          class="notice"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></div>
+        <section id="analytics" class="analytics-grid">
+          <article class="chart-card reveal" aria-labelledby="spending-heading">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Balance spending</p>
+                <h2 id="spending-heading" data-chart-total>Recent mesh flow</h2>
+              </div>
+              <div class="chip-row" role="group" aria-label="Chart date range">
+                <button class="filter-chip active" type="button" data-range="all" aria-pressed="true">All</button
+                ><button class="filter-chip" type="button" data-range="recent" aria-pressed="false">Recent</button>
+              </div>
+            </div>
+            <div class="line-chart" role="img" aria-label="Balance spending chart loading">
+              <svg viewBox="0 0 720 260" preserveAspectRatio="none">
+                <defs>
+                  <pattern
+                    id="grid"
+                    width="48"
+                    height="36"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path d="M48 0H0V36" />
+                  </pattern>
+                </defs>
+                <rect width="720" height="260" fill="url(#grid)" />
+                <path
+                  class="line red"
+                  data-flow-red
+                  d=""
+                />
+                <path
+                  class="line white"
+                  data-flow-white
+                  d=""
+                />
+                <circle class="chart-dot" cx="500" cy="118" r="6" hidden />
+              </svg>
+              <span class="chart-tip" data-chart-tip hidden>
+                <strong data-chart-tip-date></strong>
+                <span data-chart-tip-values></span>
+              </span>
+              <span class="chart-empty" hidden>No spending or credits in this period</span>
+            </div>
+            <div class="day-pills" aria-hidden="true"></div>
+            <p class="section-error" id="cashflow-error" role="status" hidden></p>
+          </article>
+          <article class="bar-card reveal" aria-labelledby="daily-heading">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Recent spending</p>
+                <h2 id="daily-heading" data-bar-total>--</h2>
+              </div>
+              <button class="mini-link" type="button" data-focus="transactions">See all</button>
+            </div>
+            <div class="bars" aria-hidden="true">
+              <span></span><span></span><span></span><span></span
+              ><span></span><span></span><span></span>
+            </div>
+            <div class="bar-labels" aria-hidden="true">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span
+              ><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <p class="section-error" id="volume-error" role="status" hidden></p>
+          </article>
+        </section>
+        <section class="bottom-grid">
+          <article
+            class="activity-card reveal"
+            aria-labelledby="recent-heading"
+          >
+            <div class="section-heading compact">
+              <h2 id="recent-heading">Recent activity</h2>
+              <button class="mini-link" type="button" data-focus="activity">See all</button>
+            </div>
+            <div id="recent-activity" class="recent-list">
+              <p class="empty-state">Waiting for activity</p>
+            </div>
+            <p class="section-error" id="activity-error" role="status" hidden></p>
+          </article>
+          <article class="asset-flow reveal" aria-labelledby="assets-heading">
+            <div class="section-heading compact">
+              <h2 id="assets-heading">Total assets</h2>
+              <strong data-assets-total>--</strong>
+            </div>
+            <div class="flow-board" aria-hidden="true">
+              <div class="flow-stack left">
+                <span data-flow-account="0">--</span><span data-flow-account="1">--</span><span data-flow-account="2">--</span>
+              </div>
+              <svg viewBox="0 0 360 150" preserveAspectRatio="none">
+                <path
+                  class="flow wide"
+                  d="M10 32 C90 25 118 98 180 80 S265 39 350 37"
+                />
+                <path
+                  class="flow red"
+                  d="M10 77 C80 90 118 28 180 55 S268 95 350 80"
+                />
+                <path
+                  class="flow thin"
+                  d="M10 118 C78 105 132 117 180 102 S284 118 350 111"
+                />
+              </svg>
+              <div class="flow-stack right">
+                <span data-flow-bridge>BRIDGE --</span><span data-flow-settled>SETTLED --</span><span data-flow-cache>CACHE --</span>
+              </div>
+            </div>
+          </article>
+          <article
+            class="cashflow-card reveal"
+            aria-labelledby="cashflow-heading"
+          >
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Net cashflow</p>
+                <h2 id="cashflow-heading" data-cashflow>--</h2>
+              </div>
+              <span class="trend danger" data-cashflow-rate>0%</span>
+            </div>
+            <div class="heatmap" id="cashflow-map" aria-hidden="true"></div>
+          </article>
+        </section>
+        <section class="operations-grid">
+          <article
+            id="payment-panel"
+            class="composer reveal"
+            aria-labelledby="payment-heading"
+          >
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">PAYMENTS</p>
+                <h2 id="payment-heading">Inject payment</h2>
+              </div>
+              <span class="icon-tile"><i data-lucide="send"></i></span>
+            </div>
+            <form id="payment-form">
+              <label for="senderVpa">From account</label
+              ><select id="senderVpa" name="senderVpa">
+                <option>alice@demo</option>
+                <option>bob@demo</option>
+                <option>carol@demo</option>
+              </select>
+              <label for="receiverVpa">To account</label
+              ><select id="receiverVpa" name="receiverVpa">
+                <option>bob@demo</option>
+                <option>carol@demo</option>
+                <option>alice@demo</option>
+                <option>dave@demo</option>
+              </select>
+              <div class="form-row">
+                <div>
+                  <label for="amount">Amount</label>
+                  <div class="amount-input">
+                    <span>INR</span
+                    ><input
+                      type="number"
+                      id="amount"
+                      name="amount"
+                      value="500"
+                      required
+                      min="0.01"
+                      step="0.01"
+                      inputmode="decimal"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label for="pin">Demo PIN</label
+                  ><input
+                    type="password"
+                    id="pin"
+                    name="pin"
+                    pattern="[0-9]{4}"
+                    maxlength="4"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="4 digits"
+                  />
+                </div>
+              </div>
+              <div class="payment-meta">
+                <span><i data-lucide="smartphone"></i>Sender's registered phone</span
+                ><span>TTL 5</span>
+              </div>
+              <button class="button primary full" type="submit" data-mutation>
+                <i data-lucide="send"></i><span>Inject into mesh</span
+                ><i data-lucide="arrow-up-right"></i>
+              </button>
+            </form>
+          </article>
+          <article
+            id="mesh"
+            class="mesh-section reveal"
+            aria-labelledby="mesh-heading"
+          >
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">NETWORK</p>
+                <h2 id="mesh-heading">Mesh devices</h2>
+              </div>
+              <span class="badge neutral" id="mesh-summary">Loading</span>
+            </div>
+            <p class="section-error" id="mesh-error" role="status" hidden></p>
+            <div class="device-list" id="devices" aria-busy="true">
+              <p class="empty-state">Loading devices...</p>
+            </div>
+            <div id="network-stats" class="inline-stats" aria-live="polite"></div>
+            <div id="route-history" class="inline-history"></div>
+            <p class="section-error" id="network-error" role="status" hidden></p>
+            <p class="section-error" id="routes-error" role="status" hidden></p>
+            <div class="mesh-actions">
+              <button class="button secondary" id="gossip" data-mutation>
+                <i data-lucide="repeat-2"></i>Run gossip</button
+              ><button class="button secondary" id="flush" data-mutation>
+                <i data-lucide="cloud-upload"></i>Upload bridges
+              </button>
+            </div>
+            <div class="mesh-footer">
+              <span id="cacheInfo">Idempotency cache: --</span
+              ><button class="text-button danger" id="reset" data-mutation>
+                <i data-lucide="rotate-ccw"></i>Reset mesh + cache
+              </button>
+            </div>
+          </article>
+        </section>
+        <section
+          id="accounts"
+          class="data-section reveal"
+          aria-labelledby="accounts-heading"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ACCOUNTS</p>
+              <h2 id="accounts-heading">Account balances</h2>
+            </div>
+            <span class="badge neutral" id="account-count">Loading</span>
+          </div>
+          <p class="section-error" id="accounts-error" role="status" hidden></p>
+          <div
+            class="table-scroll"
+            role="region"
+            aria-label="Account balances"
+            tabindex="0"
+          >
+            <table id="accounts-table">
+              <thead>
+                <tr>
+                  <th scope="col">Account holder</th>
+                  <th scope="col">UPI ID</th>
+                  <th scope="col" class="align-right">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="3" class="empty-state">Loading accounts...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section
+          id="transactions"
+          class="data-section reveal"
+          aria-labelledby="transactions-heading"
+        >
+          <div class="section-heading ledger-heading">
+            <div>
+              <p class="eyebrow">TRANSACTIONS</p>
+              <h2 id="transactions-heading">Recent transactions</h2>
+              <p class="section-caption">Latest 20 records</p>
+            </div>
+            <div class="table-filters">
+              <div class="search-field">
+                <i data-lucide="search"></i
+                ><input
+                  id="tx-search"
+                  type="search"
+                  placeholder="Search ID or UPI ID"
+                  aria-label="Search transactions by ID or UPI ID"
+                />
+              </div>
+              <select id="tx-status" aria-label="Filter transactions by status">
+                <option value="">All statuses</option>
+                <option value="SETTLED">Settled</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <p
+            class="section-error"
+            id="transactions-error"
+            role="status"
+            hidden
+          ></p>
+          <div
+            class="table-scroll"
+            role="region"
+            aria-label="Recent transactions"
+            tabindex="0"
+          >
+            <table id="tx-table">
+              <thead>
+                <tr>
+                  <th scope="col">Transaction</th>
+                  <th scope="col">From / To</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Bridge</th>
+                  <th scope="col">Hops</th>
+                  <th scope="col">Settled at</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="7" class="empty-state">
+                    Loading transactions...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section class="data-section reveal" aria-labelledby="payments-heading">
+          <div class="section-heading">
+            <div><p class="eyebrow">PAYMENTS</p><h2 id="payments-heading">Payment lifecycle</h2></div>
+          </div>
+          <p class="section-error" id="payment-summary-error" role="status" hidden></p>
+          <div id="payment-counts" class="payment-counts" aria-label="Payment status counts"></div>
+          <button id="payment-filter-clear" class="mini-link" type="button" hidden>Show all payments</button>
+          <p id="reconciliation-summary" role="status">Reconciliation pending</p>
+          <p class="section-error" id="payments-error" role="status" hidden></p>
+          <div class="table-scroll" role="region" aria-label="Recent payments" tabindex="0">
+            <table id="payments-table">
+              <thead><tr><th scope="col">Payment</th><th scope="col">From / To</th>
+                <th scope="col">Amount</th><th scope="col">Status</th>
+                <th scope="col">Received</th><th scope="col">Failure</th></tr></thead>
+              <tbody><tr><td colspan="6" class="empty-state">Loading payments...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+        <section
+          id="activity"
+          class="data-section activity-section reveal"
+          aria-labelledby="activity-heading"
+        >
+          <details open>
+            <summary>
+              <span
+                ><span class="eyebrow">EVENT STREAM</span>
+                <h2 id="activity-heading">Activity log</h2></span
+              ><i data-lucide="chevron-down"></i>
+            </summary>
+            <select id="activity-type" aria-label="Filter activity by type">
+              <option value="">All activity</option><option value="PAYMENT">Payments</option>
+              <option value="TRANSACTION">Transactions</option><option value="LEDGER">Ledger</option>
+              <option value="ROUTE">Routes</option><option value="SIGNATURE">Signatures</option>
+            </select>
+            <ol id="log">
+              <li class="empty-state">No activity yet</li>
+            </ol>
+            <div id="security-events" class="inline-history"></div>
+            <p class="section-error" id="security-error" role="status" hidden></p>
+          </details>
+        </section>
+      </main>
+    </div>
+    <dialog id="route-dialog" aria-labelledby="route-title">
+      <h2 id="route-title">Connect devices</h2>
+      <form id="route-form">
+        <label>From device<select id="route-source" required></select></label>
+        <label>To device<select id="route-target" required></select></label>
+        <div class="dialog-actions">
+          <button class="button secondary" type="button" id="route-cancel">Cancel</button>
+          <button class="button primary" type="submit" data-mutation>Save route</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog
+      id="reset-dialog"
+      aria-labelledby="reset-title"
+      aria-describedby="reset-description"
+    >
+      <div class="dialog-icon"><i data-lucide="rotate-ccw"></i></div>
+      <h2 id="reset-title">Reset mesh and cache?</h2>
+      <p id="reset-description">
+        This clears all held mesh packets and the idempotency cache. Account
+        balances and transaction history will remain.
+      </p>
+      <div class="dialog-actions">
+        <button class="button secondary" id="reset-cancel" autofocus>
+          Cancel</button
+        ><button class="button destructive" id="reset-confirm">
+          Reset mesh + cache
+        </button>
+      </div>
+    </dialog>
+  </body>
+</html>
