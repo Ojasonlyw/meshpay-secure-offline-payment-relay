@@ -1,0 +1,68 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="overview">
+<section id="overview" class="hero-grid" aria-labelledby="page-title">
+          <div class="balance-panel reveal">
+            <p class="crumbline">MeshPay / Home</p>
+            <p class="eyebrow">Total balance</p>
+            <div class="balance-row">
+              <h1 id="page-title"><span id="total-balance">--</span></h1>
+              <span class="trend positive" id="mesh-readiness">-- active links</span>
+            </div>
+            <div class="balance-meta">
+              <span><i data-lucide="circle-dot"></i> Ledger: demo</span>
+              <span id="last-updated">Awaiting first update</span>
+            </div>
+            <div class="hero-actions">
+              <a class="button primary" href="#accounts"
+                ><i data-lucide="plus"></i><span>View accounts</span></a
+              >
+              <a class="button secondary" href="#payment-panel"
+                ><i data-lucide="arrow-up-right"></i><span>Send</span></a
+              >
+              <button
+                class="button secondary"
+                id="refresh"
+                type="button"
+                aria-label="Refresh dashboard"
+              >
+                <i data-lucide="refresh-cw"></i><span>Refresh</span>
+              </button>
+            </div>
+          </div>
+          <div class="asset-strip reveal">
+            <article class="asset-card">
+              <div>
+                <span class="coin">MP</span
+                ><strong id="device-count">--</strong>
+              </div>
+              <span class="trend positive">devices</span
+              ><!-- Decorative sparkline; not a data series. --><svg viewBox="0 0 120 44" aria-hidden="true">
+                <path d="M4 31 C21 20 30 36 44 25 S68 10 82 18 101 30 116 13" />
+              </svg>
+            </article>
+            <article class="asset-card">
+              <div>
+                <span class="coin">NET</span
+                ><strong id="bridge-count">--</strong>
+              </div>
+              <span class="trend positive">bridges</span
+              ><!-- Decorative sparkline; not a data series. --><svg viewBox="0 0 120 44" aria-hidden="true">
+                <path d="M4 27 C23 28 28 16 42 18 S64 34 77 22 98 9 116 18" />
+              </svg>
+            </article>
+            <article class="asset-card">
+              <div>
+                <span class="coin">PKT</span
+                ><strong id="packet-count">--</strong>
+              </div>
+              <span class="trend danger">routes</span
+              ><!-- Decorative sparkline; not a data series. --><svg viewBox="0 0 120 44" aria-hidden="true">
+                <path d="M4 13 C21 22 31 7 45 17 S68 33 81 24 96 22 116 36" />
+              </svg>
+            </article>
+            <button class="asset-card add-card" type="button" id="add-route">
+              <i data-lucide="plus"></i
+              ><span>Add mesh route</span>
+            </button>
+          </div>
+        </section>
+</th:block>

@@ -1,0 +1,141 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="tables">
+<section
+          id="accounts"
+          class="data-section reveal"
+          aria-labelledby="accounts-heading"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">ACCOUNTS</p>
+              <h2 id="accounts-heading">Account balances</h2>
+            </div>
+            <span class="badge neutral" id="account-count">Loading</span>
+          </div>
+          <p class="section-error" id="accounts-error" role="status" hidden></p>
+          <div
+            class="table-scroll"
+            role="region"
+            aria-label="Account balances"
+            tabindex="0"
+          >
+            <table id="accounts-table">
+              <thead>
+                <tr>
+                  <th scope="col">Account holder</th>
+                  <th scope="col">UPI ID</th>
+                  <th scope="col" class="align-right">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="3" class="empty-state">Loading accounts...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+<section
+          id="transactions"
+          class="data-section reveal"
+          aria-labelledby="transactions-heading"
+        >
+          <div class="section-heading ledger-heading">
+            <div>
+              <p class="eyebrow">TRANSACTIONS</p>
+              <h2 id="transactions-heading">Recent transactions</h2>
+              <p class="section-caption">Latest 20 records</p>
+            </div>
+            <div class="table-filters">
+              <div class="search-field">
+                <i data-lucide="search"></i
+                ><input
+                  id="tx-search"
+                  type="search"
+                  placeholder="Search ID or UPI ID"
+                  aria-label="Search transactions by ID or UPI ID"
+                />
+              </div>
+              <select id="tx-status" aria-label="Filter transactions by status">
+                <option value="">All statuses</option>
+                <option value="SETTLED">Settled</option>
+                <option value="REJECTED">Rejected</option>
+              </select>
+            </div>
+          </div>
+          <p
+            class="section-error"
+            id="transactions-error"
+            role="status"
+            hidden
+          ></p>
+          <div
+            class="table-scroll"
+            role="region"
+            aria-label="Recent transactions"
+            tabindex="0"
+          >
+            <table id="tx-table">
+              <thead>
+                <tr>
+                  <th scope="col">Transaction</th>
+                  <th scope="col">From / To</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Bridge</th>
+                  <th scope="col">Hops</th>
+                  <th scope="col">Settled at</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td colspan="7" class="empty-state">
+                    Loading transactions...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+<section class="data-section reveal" aria-labelledby="payments-heading">
+          <div class="section-heading">
+            <div><p class="eyebrow">PAYMENTS</p><h2 id="payments-heading">Payment lifecycle</h2></div>
+          </div>
+          <p class="section-error" id="payment-summary-error" role="status" hidden></p>
+          <div id="payment-counts" class="payment-counts" aria-label="Payment status counts"></div>
+          <button id="payment-filter-clear" class="mini-link" type="button" hidden>Show all payments</button>
+          <p id="reconciliation-summary" role="status">Reconciliation pending</p>
+          <p class="section-error" id="payments-error" role="status" hidden></p>
+          <div class="table-scroll" role="region" aria-label="Recent payments" tabindex="0">
+            <table id="payments-table">
+              <thead><tr><th scope="col">Payment</th><th scope="col">From / To</th>
+                <th scope="col">Amount</th><th scope="col">Status</th>
+                <th scope="col">Received</th><th scope="col">Failure</th></tr></thead>
+              <tbody><tr><td colspan="6" class="empty-state">Loading payments...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+<section
+          id="activity"
+          class="data-section activity-section reveal"
+          aria-labelledby="activity-heading"
+        >
+          <details open>
+            <summary>
+              <span
+                ><span class="eyebrow">EVENT STREAM</span>
+                <h2 id="activity-heading">Activity log</h2></span
+              ><i data-lucide="chevron-down"></i>
+            </summary>
+            <select id="activity-type" aria-label="Filter activity by type">
+              <option value="">All activity</option><option value="PAYMENT">Payments</option>
+              <option value="TRANSACTION">Transactions</option><option value="LEDGER">Ledger</option>
+              <option value="ROUTE">Routes</option><option value="SIGNATURE">Signatures</option>
+            </select>
+            <ol id="log">
+              <li class="empty-state">No activity yet</li>
+            </ol>
+            <div id="security-events" class="inline-history"></div>
+            <p class="section-error" id="security-error" role="status" hidden></p>
+          </details>
+        </section>
+</th:block>

@@ -1,0 +1,59 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar">
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview">
+        <span class="brand-mark"><i data-lucide="asterisk"></i></span>
+        <span>MeshPay</span>
+      </a>
+      <button
+        class="sidebar-collapse"
+        type="button"
+        aria-label="Collapse navigation"
+      >
+        <i data-lucide="panel-left-close"></i>
+      </button>
+      <nav class="nav-groups">
+        <section aria-label="General">
+          <p class="nav-label">GENERAL</p>
+          <a class="nav-link active" href="#overview" aria-current="location"
+            ><i data-lucide="home"></i><span>Home</span></a
+          >
+          <a class="nav-link" href="#accounts"
+            ><i data-lucide="wallet-cards"></i><span>Accounts</span></a
+          >
+          <a class="nav-link" href="#transactions"
+            ><i data-lucide="arrow-left-right"></i><span>Transactions</span
+            ><span class="nav-badge" id="tx-count">0</span></a
+          >
+        </section>
+        <section aria-label="Tools">
+          <p class="nav-label">TOOLS</p>
+          <a class="nav-link" href="#payment-panel"
+            ><i data-lucide="send"></i><span>Payments</span></a
+          >
+          <a class="nav-link" href="#mesh"
+            ><i data-lucide="radio-tower"></i><span>Mesh bridge</span></a
+          >
+
+
+        </section>
+        <section aria-label="Insights">
+          <p class="nav-label">INSIGHTS</p>
+          <a class="nav-link" href="#activity"
+            ><i data-lucide="activity"></i><span>Activity</span></a
+          >
+          <a class="nav-link" href="#analytics"
+            ><i data-lucide="bar-chart-3"></i><span>Analytics</span></a
+          >
+
+        </section>
+
+      </nav>
+      <div class="sidebar-footer">
+        <span class="upgrade-icon"><i data-lucide="zap"></i></span>
+        <span
+          ><strong id="footer-connection">Connecting</strong
+          ><small id="footer-bridges">-- bridges</small></span
+        >
+      </div>
+    </aside>
+</th:block>

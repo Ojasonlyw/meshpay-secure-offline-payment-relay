@@ -1,0 +1,124 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="analytics">
+<section id="analytics" class="analytics-grid">
+          <article class="chart-card reveal" aria-labelledby="spending-heading">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Balance spending</p>
+                <h2 id="spending-heading" data-chart-total>Recent mesh flow</h2>
+              </div>
+              <div class="chip-row" role="group" aria-label="Chart date range">
+                <button class="filter-chip active" type="button" data-range="all" aria-pressed="true">All</button
+                ><button class="filter-chip" type="button" data-range="recent" aria-pressed="false">Recent</button>
+              </div>
+            </div>
+            <div class="line-chart" role="img" aria-label="Balance spending chart loading">
+              <svg viewBox="0 0 720 260" preserveAspectRatio="none">
+                <defs>
+                  <pattern
+                    id="grid"
+                    width="48"
+                    height="36"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path d="M48 0H0V36" />
+                  </pattern>
+                </defs>
+                <rect width="720" height="260" fill="url(#grid)" />
+                <path
+                  class="line red"
+                  data-flow-red
+                  d=""
+                />
+                <path
+                  class="line white"
+                  data-flow-white
+                  d=""
+                />
+                <circle class="chart-dot" cx="500" cy="118" r="6" hidden />
+              </svg>
+              <span class="chart-tip" data-chart-tip hidden>
+                <strong data-chart-tip-date></strong>
+                <span data-chart-tip-values></span>
+              </span>
+              <span class="chart-empty" hidden>No spending or credits in this period</span>
+            </div>
+            <div class="day-pills" aria-hidden="true"></div>
+            <p class="section-error" id="cashflow-error" role="status" hidden></p>
+          </article>
+          <article class="bar-card reveal" aria-labelledby="daily-heading">
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Recent spending</p>
+                <h2 id="daily-heading" data-bar-total>--</h2>
+              </div>
+              <button class="mini-link" type="button" data-focus="transactions">See all</button>
+            </div>
+            <div class="bars" aria-hidden="true">
+              <span></span><span></span><span></span><span></span
+              ><span></span><span></span><span></span>
+            </div>
+            <div class="bar-labels" aria-hidden="true">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span
+              ><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <p class="section-error" id="volume-error" role="status" hidden></p>
+          </article>
+        </section>
+<section class="bottom-grid">
+          <article
+            class="activity-card reveal"
+            aria-labelledby="recent-heading"
+          >
+            <div class="section-heading compact">
+              <h2 id="recent-heading">Recent activity</h2>
+              <button class="mini-link" type="button" data-focus="activity">See all</button>
+            </div>
+            <div id="recent-activity" class="recent-list">
+              <p class="empty-state">Waiting for activity</p>
+            </div>
+            <p class="section-error" id="activity-error" role="status" hidden></p>
+          </article>
+          <article class="asset-flow reveal" aria-labelledby="assets-heading">
+            <div class="section-heading compact">
+              <h2 id="assets-heading">Ledger balance</h2>
+              <strong data-assets-total>--</strong>
+            </div>
+            <!-- Decorative connectors; account and ledger totals remain live. -->
+            <div class="flow-board" aria-hidden="true">
+              <div class="flow-stack left">
+                <span data-flow-account="0">--</span><span data-flow-account="1">--</span><span data-flow-account="2">--</span>
+              </div>
+              <svg viewBox="0 0 360 150" preserveAspectRatio="none">
+                <path
+                  class="flow wide"
+                  d="M10 32 C90 25 118 98 180 80 S265 39 350 37"
+                />
+                <path
+                  class="flow red"
+                  d="M10 77 C80 90 118 28 180 55 S268 95 350 80"
+                />
+                <path
+                  class="flow thin"
+                  d="M10 118 C78 105 132 117 180 102 S284 118 350 111"
+                />
+              </svg>
+              <div class="flow-stack right">
+                <span data-flow-bridge>BRIDGE --</span><span data-flow-settled>SETTLED --</span><span data-flow-cache>CACHE --</span>
+              </div>
+            </div>
+          </article>
+          <article
+            class="cashflow-card reveal"
+            aria-labelledby="cashflow-heading"
+          >
+            <div class="section-heading compact">
+              <div>
+                <p class="eyebrow">Net cashflow</p>
+                <h2 id="cashflow-heading" data-cashflow>--</h2>
+              </div>
+              <span class="trend danger" data-cashflow-rate>0%</span>
+            </div>
+            <div class="heatmap" id="cashflow-map" aria-hidden="true"></div>
+          </article>
+        </section>
+</th:block>
