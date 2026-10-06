@@ -1,0 +1,17 @@
+{
+  "seconds": 60,
+  "requests": 92,
+  "byEndpoint": {
+    "/api/payments": 19,
+    "/api/mesh/state": 19,
+    "/api/dashboard/summary": 19,
+    "/api/accounts": 6,
+    "/api/transactions": 6,
+    "/api/dashboard/network-stats": 5,
+    "/api/dashboard/cashflow": 4,
+    "/api/dashboard/transaction-volume": 4,
+    "/api/dashboard/security-events": 4,
+    "/api/mesh/routes": 3,
+    "/api/dashboard/activity": 3
+  }
+}

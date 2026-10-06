@@ -2,6 +2,7 @@
 import { chromium } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import {referenceScroll} from './scrollOffsets.mjs';
 export const baseURL = process.env.BASE_URL || 'http://localhost:18080';
 export const widths = [1440, 1280, 1024, 768, 430, 360];
 export const paths = ['/api/payments', '/api/dashboard/summary', '/api/mesh/state', '/api/accounts', '/api/transactions', '/api/dashboard/cashflow', '/api/dashboard/activity', '/api/dashboard/network-stats', '/api/dashboard/transaction-volume', '/api/dashboard/security-events', '/api/mesh/routes'];
@@ -33,6 +34,7 @@ export async function fixtures(name) {
 export async function openPage(browser, width, data) {
   const context = await browser.newContext({ viewport: { width, height: 1000 }, deviceScaleFactor: 1, locale: 'en-IN', timezoneId: 'Asia/Kolkata' });
   const page = await context.newPage();
+  page.on('pageerror',error=>console.error('Browser error:',error.stack));
   await page.addInitScript(() => {
     const OriginalDate = Date;
     window.Date = class extends OriginalDate {
@@ -42,11 +44,13 @@ export async function openPage(browser, width, data) {
   });
   await page.route('**/api/**', route => {
     const url = new URL(route.request().url());
+    if(!url.pathname.startsWith('/api/'))return route.continue();
     const payload = data[url.pathname + url.search] ?? data[url.pathname];
     return route.fulfill({ status: payload === undefined ? 404 : 200, contentType: 'application/json', body: JSON.stringify(payload ?? {}) });
   });
   await page.goto(baseURL);
-  await page.waitForFunction(() => document.getElementById('connection-text').textContent === 'Live connection');
+  try { await page.waitForFunction(() => document.getElementById('connection-text').textContent === 'Live connection'); }
+  catch(error) { console.error(await page.locator('.section-error:not([hidden])').allTextContents()); throw error; }
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(750);
   await page.mouse.move(0, 0);
@@ -72,9 +76,11 @@ export async function capture(directory) {
         if(state === 'route') await page.locator('#add-route').click();
         if(state === 'drawer') await page.locator('#menu-toggle').click();
         if(state === 'invalid') {
+          const scroll=directory==='actual'?await referenceScroll(page,width):null;
           await page.locator('#amount').fill('0');
           await page.locator('#payment-form button[type=submit]').click();
           if(!await page.locator('#amount').evaluate(el=>!el.validity.valid)) throw new Error('Invalid amount accepted');
+          if(scroll!==null){await page.waitForTimeout(600);await page.evaluate(scroll=>window.scrollTo({top:scroll,behavior:'instant'}),scroll);}
         }
         await page.waitForTimeout(300);
         await page.mouse.move(0, 0);
