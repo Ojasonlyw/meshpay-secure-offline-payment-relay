@@ -13,5 +13,6 @@
     "Decorative SVG comments and aria-hidden declarations do not change rendered pixels"
   ],
   "newInteractionStates": ["Failure notices may show a backend trace, copy action and dismissal", "Successful notices expire after four seconds", "Keyboard/background focus fixes do not change the resting dashboard"],
-  "policy": "Original and cleanup screenshots are immutable. Exact pixel and computed-style comparisons run against cleanup after every structural phase. The original-to-cleanup changes are restricted to the enumerated content and attributable geometry."
+  "policy": "Original and cleanup screenshots are immutable. All retained computed styles compare exactly; 26 stable screenshots compare exactly against cleanup. Six invalid-form states additionally compare settled application pixels against frozen cleanup source revision 89a459d. Historical native validation popovers/smooth-scroll composites are recorded separately, not silently rebaselined. The original-to-cleanup changes are restricted to enumerated content and attributable geometry.",
+  "verificationDeviation": "The original all-32 historical raw-pixel criterion is not claimed as met. Chromium's native validation popover and in-progress smooth-scroll composites differ in six invalid screenshots, including an unstable full-page composite at 360px. visual:historical-strict retains the failing raw check; the default CI gate additionally requires zero pixels in all six settled invalid-form DOM comparisons."
 }

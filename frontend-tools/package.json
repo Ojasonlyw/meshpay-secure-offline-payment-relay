@@ -6,9 +6,10 @@
     "baseline": "node capture-baseline.mjs baseline",
     "cleanup": "node capture-baseline.mjs cleanup",
     "visual": "node compare.mjs",
+    "visual:historical-strict": "node compare.mjs --historical-strict",
     "lint": "node lint.mjs",
-    "format": "prettier --write ../src/main/resources/static/js ../src/main/resources/static/css *.mjs tests",
-    "format:check": "prettier --check ../src/main/resources/static/js ../src/main/resources/static/css *.mjs tests",
+    "format": "prettier --write ../src/main/resources/static/js ../src/main/resources/static/css ../src/main/resources/templates *.mjs tests package.json .prettierrc.json .stylelintrc.json compose.yaml ../.github/workflows/frontend.yml",
+    "format:check": "prettier --check ../src/main/resources/static/js ../src/main/resources/static/css ../src/main/resources/templates *.mjs tests package.json .prettierrc.json .stylelintrc.json compose.yaml ../.github/workflows/frontend.yml",
     "test": "node --test tests/*.test.mjs",
     "e2e": "playwright test",
     "lighthouse": "node lighthouse.mjs"

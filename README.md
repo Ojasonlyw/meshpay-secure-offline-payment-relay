@@ -4,7 +4,7 @@ Spring Boot backend for a simulated offline mesh payment demo. A sender creates 
 
 This is a backend engineering demo. It is not a real UPI, NPCI, or bank integration.
 
-Phase 0 establishes reproducible setup, CI, integration coverage, and local measurements. The existing dashboard is a demo control surface with MeshPay branding; its layout and behavior remain unchanged in this phase.
+Phase 0 established reproducible setup, CI, integration coverage, and local measurements. The frontend refactor preserves the dashboard's dark/orange Manrope design while correcting demo copy and separating browser modules, ordered CSS and Thymeleaf fragments. Backend source and migrations remain unchanged.
 
 ## Supported Flow And Status Semantics
 
@@ -249,6 +249,14 @@ Run with the production-style PostgreSQL profile:
 ```
 
 ## Run Tests
+
+Frontend verification is independent of the Maven backend suite. See
+[frontend development instructions](frontend-tools/README.md), the
+[audit](frontend-tools/AUDIT.md), [implementation report](frontend-tools/REPORT.md) and
+[deferred suggestions](SUGGESTIONS.md). An isolated Java 17 preview uses port 18080 and
+separate data/key storage. Frontend tooling is development-only: normal Maven startup
+does not require npm installation or compilation. The independent frontend workflow checks
+behavior, visuals, computed styles, axe and Lighthouse, and uploads reports.
 
 ```powershell
 .\mvnw.cmd test
