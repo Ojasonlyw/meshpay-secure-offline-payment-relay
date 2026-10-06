@@ -7,3 +7,8 @@ target/
 .vscode/
 .DS_Store
 .env
+frontend-tools/node_modules/
+frontend-tools/actual/
+frontend-tools/test-results/
+frontend-tools/playwright-report/
+frontend-tools/coverage/

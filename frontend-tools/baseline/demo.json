@@ -1,0 +1,1321 @@
+{
+  "/api/payments": [
+    {
+      "paymentId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69",
+      "packetHash": "06eb48f59d1c65459517f421ee2da2692b52b74fe4ab55c95ef9e564d295d9f8",
+      "senderVpa": "alice@demo",
+      "receiverVpa": "bob@demo",
+      "amount": 1,
+      "status": "SETTLED",
+      "signedAt": "2026-10-06T13:10:21.171Z",
+      "receivedAt": "2026-10-06T13:10:21.609248Z",
+      "settledAt": "2026-10-06T13:10:21.768974Z",
+      "failureCode": null,
+      "failureMessage": null,
+      "bridgeNodeId": "phone-bridge",
+      "hopCount": 4,
+      "transactionId": 1
+    }
+  ],
+  "/api/dashboard/summary": {
+    "totalAccounts": 5,
+    "totalTransactions": 1,
+    "pendingTransactions": 0,
+    "settledTransactions": 1,
+    "failedTransactions": 0,
+    "totalVolume": 1,
+    "totalPayments": 1,
+    "paymentStatusCounts": {
+      "PENDING": 0,
+      "REJECTED": 0,
+      "SETTLED": 1,
+      "PROCESSING": 0,
+      "EXPIRED": 0,
+      "FAILED": 0
+    },
+    "reconciliationAccountsChecked": 5,
+    "reconciliationMismatchedAccounts": 0,
+    "reconciliationBalanced": true,
+    "totalBalance": 11500,
+    "settledPayments": 1,
+    "rejectedPayments": 0,
+    "pendingPayments": 0,
+    "failedPayments": 0,
+    "expiredPayments": 0,
+    "activeDevices": 5,
+    "bridgeDevices": 1,
+    "offlineDevices": 4,
+    "activeConnections": 4,
+    "averageHopCount": 2.5,
+    "settlementSuccessRate": 100,
+    "idempotencyCacheSize": 1
+  },
+  "/api/mesh/state": {
+    "devices": [
+      {
+        "deviceId": "phone-alice",
+        "hasInternet": false,
+        "packetCount": 1,
+        "packetIds": [
+          "e7e51012"
+        ]
+      },
+      {
+        "deviceId": "phone-bridge",
+        "hasInternet": true,
+        "packetCount": 1,
+        "packetIds": [
+          "e7e51012"
+        ]
+      },
+      {
+        "deviceId": "phone-stranger1",
+        "hasInternet": false,
+        "packetCount": 1,
+        "packetIds": [
+          "e7e51012"
+        ]
+      },
+      {
+        "deviceId": "phone-stranger2",
+        "hasInternet": false,
+        "packetCount": 1,
+        "packetIds": [
+          "e7e51012"
+        ]
+      },
+      {
+        "deviceId": "phone-stranger3",
+        "hasInternet": false,
+        "packetCount": 1,
+        "packetIds": [
+          "e7e51012"
+        ]
+      }
+    ],
+    "idempotencyCacheSize": 1,
+    "activeConnections": 4
+  },
+  "/api/accounts": [
+    {
+      "vpa": "carol@demo",
+      "holderName": "Carol",
+      "balance": 2500,
+      "version": 0
+    },
+    {
+      "vpa": "charlie@demo",
+      "holderName": "Charlie",
+      "balance": 2500,
+      "version": 0
+    },
+    {
+      "vpa": "dave@demo",
+      "holderName": "Dave",
+      "balance": 500,
+      "version": 0
+    },
+    {
+      "vpa": "alice@demo",
+      "holderName": "Alice",
+      "balance": 4999,
+      "version": 1
+    },
+    {
+      "vpa": "bob@demo",
+      "holderName": "Bob",
+      "balance": 1001,
+      "version": 1
+    }
+  ],
+  "/api/transactions": [
+    {
+      "id": 1,
+      "packetHash": "06eb48f59d1c65459517f421ee2da2692b52b74fe4ab55c95ef9e564d295d9f8",
+      "senderVpa": "alice@demo",
+      "receiverVpa": "bob@demo",
+      "amount": 1,
+      "signedAt": "2026-10-06T13:10:21.171Z",
+      "settledAt": "2026-10-06T13:10:21.768974Z",
+      "bridgeNodeId": "phone-bridge",
+      "hopCount": 4,
+      "status": "SETTLED",
+      "paymentId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69"
+    }
+  ],
+  "/api/dashboard/cashflow": {
+    "accountVpa": null,
+    "totalCreditVolume": 1,
+    "totalDebitVolume": 1,
+    "settledAmount": 1,
+    "rejectedAmount": 0,
+    "netMovement": 0,
+    "points": [
+      {
+        "bucket": "2026-09-22",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-23",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-24",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-25",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-26",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-27",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-28",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-29",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 1,
+        "debits": 1,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      }
+    ]
+  },
+  "/api/dashboard/activity": {
+    "items": [
+      {
+        "type": "TRANSACTION",
+        "title": "Transaction SETTLED",
+        "description": "alice@demo → bob@demo",
+        "status": "SETTLED",
+        "occurredAt": "2026-10-06T13:10:21.768974Z",
+        "referenceId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69"
+      },
+      {
+        "type": "LEDGER",
+        "title": "CREDIT entry",
+        "description": "bob@demo · 1.00",
+        "status": "CREDIT",
+        "occurredAt": "2026-10-06T13:10:21.768974Z",
+        "referenceId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69"
+      },
+      {
+        "type": "LEDGER",
+        "title": "DEBIT entry",
+        "description": "alice@demo · 1.00",
+        "status": "DEBIT",
+        "occurredAt": "2026-10-06T13:10:21.768974Z",
+        "referenceId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69"
+      },
+      {
+        "type": "SIGNATURE",
+        "title": "Signature VERIFIED",
+        "description": "Device authorization verified",
+        "status": "VERIFIED",
+        "occurredAt": "2026-10-06T13:10:21.712705Z",
+        "referenceId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69"
+      },
+      {
+        "type": "PAYMENT",
+        "title": "Payment SETTLED",
+        "description": "alice@demo → bob@demo",
+        "status": "SETTLED",
+        "occurredAt": "2026-10-06T13:10:21.609248Z",
+        "referenceId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69"
+      },
+      {
+        "type": "ROUTE",
+        "title": "Packet routed",
+        "description": "phone-stranger3 → phone-bridge",
+        "status": "ROUTED",
+        "occurredAt": "2026-10-06T13:10:21.477738Z",
+        "referenceId": "e7e51012-cade-4bab-a1f7-03093bf8043a"
+      },
+      {
+        "type": "ROUTE",
+        "title": "Packet routed",
+        "description": "phone-stranger2 → phone-stranger3",
+        "status": "ROUTED",
+        "occurredAt": "2026-10-06T13:10:21.412913Z",
+        "referenceId": "e7e51012-cade-4bab-a1f7-03093bf8043a"
+      },
+      {
+        "type": "ROUTE",
+        "title": "Packet routed",
+        "description": "phone-stranger1 → phone-stranger2",
+        "status": "ROUTED",
+        "occurredAt": "2026-10-06T13:10:21.351205Z",
+        "referenceId": "e7e51012-cade-4bab-a1f7-03093bf8043a"
+      },
+      {
+        "type": "ROUTE",
+        "title": "Packet routed",
+        "description": "phone-alice → phone-stranger1",
+        "status": "ROUTED",
+        "occurredAt": "2026-10-06T13:10:21.293721Z",
+        "referenceId": "e7e51012-cade-4bab-a1f7-03093bf8043a"
+      }
+    ]
+  },
+  "/api/dashboard/network-stats": {
+    "totalDevices": 5,
+    "activeDevices": 5,
+    "trustedDevices": 5,
+    "revokedDevices": 0,
+    "bridgeDevices": 1,
+    "offlineDevices": 4,
+    "activeConnections": 4,
+    "packetsRouted": 4,
+    "averageHopCount": 2.5,
+    "latestRouteTimestamp": "2026-10-06T13:10:21.477738Z",
+    "mostActiveBridgeDevice": "phone-bridge"
+  },
+  "/api/dashboard/transaction-volume": {
+    "settledCount": 1,
+    "rejectedCount": 0,
+    "failedCount": 0,
+    "settledAmount": 1,
+    "points": [
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 1,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 1
+      }
+    ]
+  },
+  "/api/dashboard/security-events": {
+    "invalidSignatureEvents": 0,
+    "rejectedDeviceAuthorization": 0,
+    "failedSignatureVerification": 0,
+    "items": []
+  },
+  "/api/mesh/routes": [
+    {
+      "packetId": "e7e51012-cade-4bab-a1f7-03093bf8043a",
+      "paymentId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69",
+      "sourceDeviceId": "phone-stranger3",
+      "destinationDeviceId": "phone-bridge",
+      "hopNumber": 4,
+      "receivedAt": "2026-10-06T13:10:21.477738Z",
+      "forwardedAt": "2026-10-06T13:10:21.477743Z",
+      "ttlAfterHop": 1
+    },
+    {
+      "packetId": "e7e51012-cade-4bab-a1f7-03093bf8043a",
+      "paymentId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69",
+      "sourceDeviceId": "phone-stranger2",
+      "destinationDeviceId": "phone-stranger3",
+      "hopNumber": 3,
+      "receivedAt": "2026-10-06T13:10:21.412913Z",
+      "forwardedAt": "2026-10-06T13:10:21.412919Z",
+      "ttlAfterHop": 2
+    },
+    {
+      "packetId": "e7e51012-cade-4bab-a1f7-03093bf8043a",
+      "paymentId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69",
+      "sourceDeviceId": "phone-stranger1",
+      "destinationDeviceId": "phone-stranger2",
+      "hopNumber": 2,
+      "receivedAt": "2026-10-06T13:10:21.351205Z",
+      "forwardedAt": "2026-10-06T13:10:21.351210Z",
+      "ttlAfterHop": 3
+    },
+    {
+      "packetId": "e7e51012-cade-4bab-a1f7-03093bf8043a",
+      "paymentId": "6ee81f3d-daff-4f26-9a30-c84c8d0e7f69",
+      "sourceDeviceId": "phone-alice",
+      "destinationDeviceId": "phone-stranger1",
+      "hopNumber": 1,
+      "receivedAt": "2026-10-06T13:10:21.293721Z",
+      "forwardedAt": "2026-10-06T13:10:21.293752Z",
+      "ttlAfterHop": 4
+    }
+  ],
+  "/api/dashboard/cashflow?accountVpa=carol%40demo": {
+    "accountVpa": "carol@demo",
+    "totalCreditVolume": 0,
+    "totalDebitVolume": 0,
+    "settledAmount": 1,
+    "rejectedAmount": 0,
+    "netMovement": 0,
+    "points": [
+      {
+        "bucket": "2026-09-22",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-23",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-24",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-25",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-26",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-27",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-28",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-29",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      }
+    ]
+  },
+  "/api/dashboard/cashflow?accountVpa=charlie%40demo": {
+    "accountVpa": "charlie@demo",
+    "totalCreditVolume": 0,
+    "totalDebitVolume": 0,
+    "settledAmount": 1,
+    "rejectedAmount": 0,
+    "netMovement": 0,
+    "points": [
+      {
+        "bucket": "2026-09-22",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-23",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-24",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-25",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-26",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-27",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-28",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-29",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      }
+    ]
+  },
+  "/api/dashboard/cashflow?accountVpa=dave%40demo": {
+    "accountVpa": "dave@demo",
+    "totalCreditVolume": 0,
+    "totalDebitVolume": 0,
+    "settledAmount": 1,
+    "rejectedAmount": 0,
+    "netMovement": 0,
+    "points": [
+      {
+        "bucket": "2026-09-22",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-23",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-24",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-25",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-26",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-27",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-28",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-29",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      }
+    ]
+  },
+  "/api/dashboard/cashflow?accountVpa=alice%40demo": {
+    "accountVpa": "alice@demo",
+    "totalCreditVolume": 0,
+    "totalDebitVolume": 1,
+    "settledAmount": 1,
+    "rejectedAmount": 0,
+    "netMovement": -1,
+    "points": [
+      {
+        "bucket": "2026-09-22",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-23",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-24",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-25",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-26",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-27",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-28",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-29",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 0,
+        "debits": 1,
+        "netMovement": -1,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      }
+    ]
+  },
+  "/api/dashboard/cashflow?accountVpa=bob%40demo": {
+    "accountVpa": "bob@demo",
+    "totalCreditVolume": 1,
+    "totalDebitVolume": 0,
+    "settledAmount": 1,
+    "rejectedAmount": 0,
+    "netMovement": 1,
+    "points": [
+      {
+        "bucket": "2026-09-22",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-23",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-24",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-25",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-26",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-27",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-28",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-29",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-09-30",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-01",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-02",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-03",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-04",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-05",
+        "credits": 0,
+        "debits": 0,
+        "netMovement": 0,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      },
+      {
+        "bucket": "2026-10-06",
+        "credits": 1,
+        "debits": 0,
+        "netMovement": 1,
+        "settledCount": 0,
+        "rejectedCount": 0,
+        "failedCount": 0,
+        "settledAmount": 0
+      }
+    ]
+  }
+}
