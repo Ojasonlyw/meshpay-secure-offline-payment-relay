@@ -1,0 +1,248 @@
+/* Ordered extraction 3; preserve source-order cascade. */
+.balance-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 5px 0 7px;
+}
+.balance-meta {
+  flex-wrap: wrap;
+  gap: 9px;
+  color: #aaa9a3;
+  font-size: 11px;
+}
+.balance-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.balance-meta svg {
+  width: 10px;
+  height: 10px;
+  color: var(--accent);
+}
+.hero-actions {
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 9px 13px;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease,
+    border-color 0.16s ease;
+}
+.button:hover {
+  transform: translateY(-1px);
+}
+.button:active {
+  transform: translateY(1px) scale(0.98);
+}
+.primary {
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  box-shadow: 0 12px 28px rgb(255 66 30 / 32%);
+}
+.secondary {
+  background: var(--white-8);
+  border-color: var(--line);
+}
+.destructive {
+  background: #b91d1d;
+}
+.full {
+  width: 100%;
+  justify-content: flex-start;
+}
+.full svg:last-child {
+  margin-left: auto;
+}
+.asset-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.asset-card {
+  min-height: 116px;
+  padding: 15px;
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.asset-card:hover,
+.chart-card:hover,
+.bar-card:hover,
+.activity-card:hover,
+.asset-flow:hover,
+.cashflow-card:hover,
+.composer:hover,
+.mesh-section:hover,
+.data-section:hover {
+  transform: translateY(-2px);
+  border-color: var(--white-20);
+  box-shadow: 0 25px 80px rgb(0 0 0 / 56%);
+}
+.asset-card div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.asset-card strong {
+  color: white;
+  font-size: 24px;
+  line-height: 1;
+}
+.coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 24px;
+  border-radius: 999px;
+  color: white;
+  background: rgb(255 255 255 / 10%);
+  font-size: 10px;
+  font-weight: 800;
+}
+.trend {
+  font-size: 10px;
+  font-weight: 800;
+}
+.positive {
+  color: var(--green);
+}
+.danger {
+  color: var(--red);
+}
+.asset-card svg {
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  overflow: visible;
+}
+.asset-card path {
+  fill: none;
+  stroke: var(--green);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px rgb(50 212 109 / 35%));
+}
+.asset-card:nth-child(3) path {
+  stroke: var(--red);
+}
+.add-card {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  color: var(--muted);
+  border-style: dashed;
+  background: transparent;
+}
+.add-card svg {
+  width: 20px;
+  height: 20px;
+}
+.analytics-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.72fr);
+  margin-top: 14px;
+}
+.chart-card,
+.bar-card,
+.activity-card,
+.asset-flow,
+.cashflow-card {
+  padding: 16px;
+}
+.section-heading {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+.compact {
+  margin-bottom: 10px;
+}
+.filter-chip,
+.mini-link,
+.badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #b9b9b2;
+  background: rgb(255 255 255 / 6%);
+  font-size: 10px;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  min-height: 30px;
+  padding: 5px 12px;
+  font-weight: 700;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+.chip-row {
+  flex-shrink: 0;
+  gap: 7px;
+}
+.filter-chip:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+  background: var(--white-9);
+}
+.filter-chip.active {
+  color: #ffb09b;
+  border-color: rgb(255 106 43 / 42%);
+  background: rgb(255 106 43 / 13%);
+}
+.mini-link {
+  min-height: 26px;
+  padding: 4px 9px;
+}
+.line-chart {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+  border-radius: 7px;
+  background: radial-gradient(ellipse at 52% 45%, var(--white-2), transparent 72%);
+}
+.line-chart svg {
+  width: 100%;
+  height: 100%;
+}
+.line-chart pattern path {
+  fill: none;
+  stroke: var(--white-5);
+  stroke-width: 1;
+}
+.line {
+  fill: none;
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.line.red {
+  stroke: #ed343d;
+  filter: drop-shadow(0 0 9px rgb(237 52 61 / 24%));
+}
+.line.white {
+  stroke: #f2f1ed;
+  filter: drop-shadow(0 0 8px rgb(255 255 255 / 16%));
+}
+.chart-dot {
+  fill: var(--accent);
+  stroke: #fff3ed;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 10px rgb(255 66 30 / 65%));
+}
