@@ -1,36 +1,32 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="mesh">
-<article
-            id="mesh"
-            class="mesh-section reveal"
-            aria-labelledby="mesh-heading"
-          >
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">NETWORK</p>
-                <h2 id="mesh-heading">Mesh devices</h2>
-              </div>
-              <span class="badge neutral" id="mesh-summary">Loading</span>
-            </div>
-            <p class="section-error" id="mesh-error" role="status" hidden></p>
-            <div class="device-list" id="devices" aria-busy="true">
-              <p class="empty-state">Loading devices...</p>
-            </div>
-            <div id="network-stats" class="inline-stats" aria-live="polite"></div>
-            <div id="route-history" class="inline-history"></div>
-            <p class="section-error" id="network-error" role="status" hidden></p>
-            <p class="section-error" id="routes-error" role="status" hidden></p>
-            <div class="mesh-actions">
-              <button class="button secondary" id="gossip" data-mutation>
-                <i data-lucide="repeat-2"></i>Run gossip</button
-              ><button class="button secondary" id="flush" data-mutation>
-                <i data-lucide="cloud-upload"></i>Upload bridges
-              </button>
-            </div>
-            <div class="mesh-footer">
-              <span id="cacheInfo">Idempotency cache: --</span
-              ><button class="text-button danger" id="reset" data-mutation>
-                <i data-lucide="rotate-ccw"></i>Reset mesh + cache
-              </button>
-            </div>
-          </article>
+  <article id="mesh" class="mesh-section reveal" aria-labelledby="mesh-heading">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">NETWORK</p>
+        <h2 id="mesh-heading">Mesh devices</h2>
+      </div>
+      <span class="badge neutral" id="mesh-summary">Loading</span>
+    </div>
+    <p class="section-error" id="mesh-error" role="status" hidden></p>
+    <div class="device-list" id="devices" aria-busy="true">
+      <p class="empty-state">Loading devices...</p>
+    </div>
+    <div id="network-stats" class="inline-stats" aria-live="polite"></div>
+    <div id="route-history" class="inline-history"></div>
+    <p class="section-error" id="network-error" role="status" hidden></p>
+    <p class="section-error" id="routes-error" role="status" hidden></p>
+    <div class="mesh-actions">
+      <button class="button secondary" id="gossip" data-mutation>
+        <i data-lucide="repeat-2"></i>Run gossip</button
+      ><button class="button secondary" id="flush" data-mutation>
+        <i data-lucide="cloud-upload"></i>Upload bridges
+      </button>
+    </div>
+    <div class="mesh-footer">
+      <span id="cacheInfo">Idempotency cache: --</span
+      ><button class="text-button danger" id="reset" data-mutation>
+        <i data-lucide="rotate-ccw"></i>Reset mesh + cache
+      </button>
+    </div>
+  </article>
 </th:block>

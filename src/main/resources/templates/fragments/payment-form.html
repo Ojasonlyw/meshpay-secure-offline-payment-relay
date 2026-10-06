@@ -1,64 +1,64 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="payment-form">
-<article
-            id="payment-panel"
-            class="composer reveal"
-            aria-labelledby="payment-heading"
-          >
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">PAYMENTS</p>
-                <h2 id="payment-heading">Inject payment</h2>
-              </div>
-              <span class="icon-tile"><i data-lucide="send"></i></span>
-            </div>
-            <form id="payment-form">
-              <label for="senderVpa">From account</label
-              ><select id="senderVpa" name="senderVpa">
-                <option value="">Loading accounts...</option>
-              </select>
-              <label for="receiverVpa">To account</label
-              ><select id="receiverVpa" name="receiverVpa">
-                <option value="">Loading accounts...</option>
-              </select>
-              <div class="form-row">
-                <div>
-                  <label for="amount">Amount</label>
-                  <div class="amount-input">
-                    <span>INR</span
-                    ><input
-                      type="number"
-                      id="amount"
-                      name="amount"
-                      value="500"
-                      required
-                      min="0.01"
-                      step="0.01"
-                      inputmode="decimal"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label for="pin">Demo PIN</label
-                  ><input
-                    type="password"
-                    id="pin"
-                    name="pin"
-                    pattern="[0-9]{4}"
-                    maxlength="4"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    placeholder="4 digits"
-                  />
-                </div>
-              </div>
-              <div class="payment-meta">
-                <span><i data-lucide="smartphone"></i>Sender's registered phone</span
-                ><span>TTL 5</span>
-              </div>
-              <button class="button primary full" type="submit" data-mutation>
-                <i data-lucide="send"></i><span>Inject into mesh</span
-                ><i data-lucide="arrow-up-right"></i>
-              </button>
-            </form>
-          </article>
+  <article
+    id="payment-panel"
+    class="composer reveal"
+    aria-labelledby="payment-heading"
+  >
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">PAYMENTS</p>
+        <h2 id="payment-heading">Inject payment</h2>
+      </div>
+      <span class="icon-tile"><i data-lucide="send"></i></span>
+    </div>
+    <form id="payment-form">
+      <label for="senderVpa">From account</label
+      ><select id="senderVpa" name="senderVpa">
+        <option value="">Loading accounts...</option>
+      </select>
+      <label for="receiverVpa">To account</label
+      ><select id="receiverVpa" name="receiverVpa">
+        <option value="">Loading accounts...</option>
+      </select>
+      <div class="form-row">
+        <div>
+          <label for="amount">Amount</label>
+          <div class="amount-input">
+            <span>INR</span
+            ><input
+              type="number"
+              id="amount"
+              name="amount"
+              value="500"
+              required
+              min="0.01"
+              step="0.01"
+              inputmode="decimal"
+            />
+          </div>
+        </div>
+        <div>
+          <label for="pin">Demo PIN</label
+          ><input
+            type="password"
+            id="pin"
+            name="pin"
+            pattern="[0-9]{4}"
+            maxlength="4"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="4 digits"
+          />
+        </div>
+      </div>
+      <div class="payment-meta">
+        <span><i data-lucide="smartphone"></i>Sender's registered phone</span
+        ><span>TTL 5</span>
+      </div>
+      <button class="button primary full" type="submit" data-mutation>
+        <i data-lucide="send"></i><span>Inject into mesh</span
+        ><i data-lucide="arrow-up-right"></i>
+      </button>
+    </form>
+  </article>
 </th:block>

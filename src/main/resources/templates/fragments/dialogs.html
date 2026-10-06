@@ -1,32 +1,36 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="dialogs">
-<dialog id="route-dialog" aria-labelledby="route-title">
-      <h2 id="route-title">Connect devices</h2>
-      <form id="route-form">
-        <label>From device<select id="route-source" required></select></label>
-        <label>To device<select id="route-target" required></select></label>
-        <div class="dialog-actions">
-          <button class="button secondary" type="button" id="route-cancel">Cancel</button>
-          <button class="button primary" type="submit" data-mutation>Save route</button>
-        </div>
-      </form>
-    </dialog>
-<dialog
-      id="reset-dialog"
-      aria-labelledby="reset-title"
-      aria-describedby="reset-description"
-    >
-      <div class="dialog-icon"><i data-lucide="rotate-ccw"></i></div>
-      <h2 id="reset-title">Reset mesh and cache?</h2>
-      <p id="reset-description">
-        This clears all held mesh packets and the idempotency cache. Account
-        balances and transaction history will remain.
-      </p>
+  <dialog id="route-dialog" aria-labelledby="route-title">
+    <h2 id="route-title">Connect devices</h2>
+    <form id="route-form">
+      <label>From device<select id="route-source" required></select></label>
+      <label>To device<select id="route-target" required></select></label>
       <div class="dialog-actions">
-        <button class="button secondary" id="reset-cancel" autofocus>
-          Cancel</button
-        ><button class="button destructive" id="reset-confirm">
-          Reset mesh + cache
+        <button class="button secondary" type="button" id="route-cancel">
+          Cancel
+        </button>
+        <button class="button primary" type="submit" data-mutation>
+          Save route
         </button>
       </div>
-    </dialog>
+    </form>
+  </dialog>
+  <dialog
+    id="reset-dialog"
+    aria-labelledby="reset-title"
+    aria-describedby="reset-description"
+  >
+    <div class="dialog-icon"><i data-lucide="rotate-ccw"></i></div>
+    <h2 id="reset-title">Reset mesh and cache?</h2>
+    <p id="reset-description">
+      This clears all held mesh packets and the idempotency cache. Account
+      balances and transaction history will remain.
+    </p>
+    <div class="dialog-actions">
+      <button class="button secondary" id="reset-cancel" autofocus>
+        Cancel</button
+      ><button class="button destructive" id="reset-confirm">
+        Reset mesh + cache
+      </button>
+    </div>
+  </dialog>
 </th:block>

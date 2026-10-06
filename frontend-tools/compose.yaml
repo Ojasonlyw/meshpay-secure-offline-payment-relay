@@ -29,18 +29,18 @@ services:
       DB_PASSWORD: meshpay_frontend
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRING_THYMELEAF_CACHE: 'false'
+      SPRING_THYMELEAF_CACHE: "false"
       SPRING_THYMELEAF_PREFIX: file:/workspace/src/main/resources/templates/
       SPRING_WEB_RESOURCES_STATIC_LOCATIONS: file:/workspace/src/main/resources/static/
       UPI_MESH_DEMO_KEY_DIR: /demo-keys
-    ports: ['127.0.0.1:18080:8080']
+    ports: ["127.0.0.1:18080:8080"]
     networks:
       default:
         aliases: [meshpay.local]
-    volumes: ['..:/workspace', 'frontend-maven:/root/.m2', 'frontend-keys:/demo-keys']
+    volumes: ["..:/workspace", "frontend-maven:/root/.m2", "frontend-keys:/demo-keys"]
     depends_on:
-      postgres: {condition: service_healthy}
-      redis: {condition: service_healthy}
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
   tools:
     image: mcr.microsoft.com/playwright:v1.63.0-noble
     working_dir: /workspace/frontend-tools
@@ -48,7 +48,7 @@ services:
     ipc: host
     environment:
       BASE_URL: http://meshpay.local:8080
-    volumes: ['..:/workspace', 'frontend-node:/workspace/frontend-tools/node_modules']
+    volumes: ["..:/workspace", "frontend-node:/workspace/frontend-tools/node_modules"]
     profiles: [tools]
 volumes:
   frontend-postgres:

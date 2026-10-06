@@ -59,11 +59,7 @@ body {
       rgb(255 255 255 / 18%),
       transparent 28rem
     ),
-    radial-gradient(
-      circle at 18% 14%,
-      var(--white-8),
-      transparent 17rem
-    ),
+    radial-gradient(circle at 18% 14%, var(--white-8), transparent 17rem),
     linear-gradient(115deg, #050505 0%, #111 48%, #070707 100%);
   color: var(--ink);
   font:
@@ -168,8 +164,7 @@ summary:focus-visible,
   flex-direction: column;
   padding: 24px 18px 22px;
   background:
-    linear-gradient(180deg, var(--white-7), var(--white-2)),
-    rgb(8 8 8 / 88%);
+    linear-gradient(180deg, var(--white-7), var(--white-2)), rgb(8 8 8 / 88%);
   border-right: 1px solid var(--line);
   box-shadow: 18px 0 60px rgb(0 0 0 / 42%);
   backdrop-filter: blur(26px);

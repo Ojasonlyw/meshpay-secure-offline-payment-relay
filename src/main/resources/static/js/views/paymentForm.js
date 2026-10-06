@@ -1,15 +1,13 @@
 /** Owns views paymentForm. */
-import {$} from '../ui/dom.js';
-import {getState} from '../state/store.js';
-import {mutate} from '../services/mutations.js';
-import {isText, isCount} from '../api/validators.js';
-import {notice} from '../ui/notice.js';
-
-
+import { $ } from "../ui/dom.js";
+import { getState } from "../state/store.js";
+import { mutate } from "../services/mutations.js";
+import { isText, isCount } from "../api/validators.js";
+import { notice } from "../ui/notice.js";
 
 /** Wire this module once after the document is ready. @returns {void} */
 export function init() {
-$("payment-form").addEventListener("submit", (event) => {
+  $("payment-form").addEventListener("submit", (event) => {
     event.preventDefault();
     if (getState().mutationPending) return;
     const amount = $("amount");
@@ -42,7 +40,7 @@ $("payment-form").addEventListener("submit", (event) => {
       notice("Payment packet injected into the mesh.");
     });
   });
-$("amount").addEventListener("input", () =>
+  $("amount").addEventListener("input", () =>
     $("amount").setCustomValidity(""),
   );
 }

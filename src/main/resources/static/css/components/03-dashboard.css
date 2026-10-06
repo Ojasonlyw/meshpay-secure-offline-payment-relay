@@ -190,7 +190,10 @@
   min-height: 30px;
   padding: 5px 12px;
   font-weight: 700;
-  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+  transition:
+    color 0.16s ease,
+    border-color 0.16s ease,
+    background 0.16s ease;
 }
 .chip-row {
   flex-shrink: 0;
@@ -215,7 +218,11 @@
   height: 260px;
   overflow: hidden;
   border-radius: 7px;
-  background: radial-gradient(ellipse at 52% 45%, var(--white-2), transparent 72%);
+  background: radial-gradient(
+    ellipse at 52% 45%,
+    var(--white-2),
+    transparent 72%
+  );
 }
 .line-chart svg {
   width: 100%;

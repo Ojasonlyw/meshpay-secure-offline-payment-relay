@@ -1,39 +1,136 @@
 /* Ordered extraction 7; preserve source-order cascade. */
-.payment-count { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.payment-count span { font-size: 12px; }
-.payment-count strong { font-size: 22px; }
-.payment-failure { max-width: 240px; white-space: normal; overflow-wrap: anywhere; }
-#payments-table { min-width: 850px; }
-#payments-table td { white-space: nowrap; }
-#payments-table .payment-failure { white-space: normal; }
-#reconciliation-summary { margin: 0 0 16px; white-space: normal; line-height: 1.5; }
+.payment-count {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.payment-count span {
+  font-size: 12px;
+}
+.payment-count strong {
+  font-size: 22px;
+}
+.payment-failure {
+  max-width: 240px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+#payments-table {
+  min-width: 850px;
+}
+#payments-table td {
+  white-space: nowrap;
+}
+#payments-table .payment-failure {
+  white-space: normal;
+}
+#reconciliation-summary {
+  margin: 0 0 16px;
+  white-space: normal;
+  line-height: 1.5;
+}
 @media (max-width: 760px) {
-  .payment-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .payment-counts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 /* Interaction states use the existing colors and card surfaces. */
-.filter-chip { cursor: pointer; font-family: inherit; }
-.active-filter, .selected-row { outline: 1px solid var(--accent); outline-offset: -1px; }
-.clickable-metric, .interactive-row, .add-card { cursor: pointer; }
-.clickable-metric:focus-visible, .interactive-row:focus-visible, .add-card:focus-visible,
-.filter-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.add-card { font: inherit; text-align: left; }
-.inline-stats { margin-top: 12px; color: var(--muted); font-size: 11px; line-height: 1.5; }
-.inline-history { margin-top: 12px; display: grid; gap: 6px; min-width: 0; }
-.inline-history > strong { font-size: 11px; }
-.history-item { display: block; width: 100%; border: 1px solid var(--line); border-radius: 6px;
-  padding: 7px 9px; color: inherit; background: var(--white-4); font: inherit;
-  font-size: 11px; text-align: left; overflow-wrap: anywhere; }
-.flow-stack span { overflow-wrap: anywhere; }
-#activity-type { margin: 12px 0; max-width: 100%; }
-#route-dialog form { display: grid; gap: 14px; }
-#route-dialog label { display: grid; gap: 6px; }
-#route-dialog select { max-width: 100%; }
+.filter-chip {
+  cursor: pointer;
+  font-family: inherit;
+}
+.active-filter,
+.selected-row {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+.clickable-metric,
+.interactive-row,
+.add-card {
+  cursor: pointer;
+}
+.clickable-metric:focus-visible,
+.interactive-row:focus-visible,
+.add-card:focus-visible,
+.filter-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.add-card {
+  font: inherit;
+  text-align: left;
+}
+.inline-stats {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.inline-history {
+  margin-top: 12px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.inline-history > strong {
+  font-size: 11px;
+}
+.history-item {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 7px 9px;
+  color: inherit;
+  background: var(--white-4);
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.flow-stack span {
+  overflow-wrap: anywhere;
+}
+#activity-type {
+  margin: 12px 0;
+  max-width: 100%;
+}
+#route-dialog form {
+  display: grid;
+  gap: 14px;
+}
+#route-dialog label {
+  display: grid;
+  gap: 6px;
+}
+#route-dialog select {
+  max-width: 100%;
+}
 @media (max-width: 430px) {
-  .balance-row, .section-heading, .recent-item { min-width: 0; }
-  .balance-row h1, .section-heading h2, .recent-item strong { overflow-wrap: anywhere; }
-  .recent-item { grid-template-columns: 34px minmax(0, 1fr); }
-  .recent-time { grid-column: 2; margin-top: -6px; }
-  .filter-chip { min-width: 62px; padding-inline: 9px; }
-  .payment-count strong { font-size: 18px; }
+  .balance-row,
+  .section-heading,
+  .recent-item {
+    min-width: 0;
+  }
+  .balance-row h1,
+  .section-heading h2,
+  .recent-item strong {
+    overflow-wrap: anywhere;
+  }
+  .recent-item {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+  .recent-time {
+    grid-column: 2;
+    margin-top: -6px;
+  }
+  .filter-chip {
+    min-width: 62px;
+    padding-inline: 9px;
+  }
+  .payment-count strong {
+    font-size: 18px;
+  }
 }
