@@ -1,0 +1,29 @@
+name: MeshPay CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Verify Docker for PostgreSQL and Redis Testcontainers
+        run: docker info
+      - name: Run unit and integration tests
+        run: ./mvnw test
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maven-test-reports
+          path: target/surefire-reports/
+          if-no-files-found: warn

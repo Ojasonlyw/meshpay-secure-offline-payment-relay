@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.demo</groupId>
-    <artifactId>upi-offline-mesh</artifactId>
+    <artifactId>meshpay-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>upi-offline-mesh</name>
-    <description>Offline UPI via Bluetooth Mesh - Demo Backend</description>
+    <name>MeshPay</name>
+    <description>Simulated offline mesh payment demo backend</description>
 
     <properties>
         <java.version>17</java.version>
@@ -100,4 +100,21 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>baseline</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <includes><include>**/LocalBaselineIT.java</include></includes>
+                            <reportsDirectory>${project.build.directory}/baseline/surefire-reports</reportsDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

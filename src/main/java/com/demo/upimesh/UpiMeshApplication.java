@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Entry point for the offline UPI mesh demo.
+ * Entry point for MeshPay, the simulated offline mesh payment demo.
  *
  * Run from terminal:
  *   ./mvnw spring-boot:run        (Linux/Mac)

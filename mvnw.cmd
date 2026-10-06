@@ -43,12 +43,16 @@ set DOWNLOAD_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/
 @REM First-run: download the wrapper JAR if missing.
 if not exist %WRAPPER_JAR% (
     echo Downloading Maven Wrapper from %DOWNLOAD_URL% ...
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri %DOWNLOAD_URL% -OutFile %WRAPPER_JAR%}"
+    powershell -NoProfile -Command "$ErrorActionPreference='Stop'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri %DOWNLOAD_URL% -OutFile %WRAPPER_JAR%"
+    if ERRORLEVEL 1 goto error
     if not exist %WRAPPER_JAR% (
         echo ERROR: failed to download Maven Wrapper.
         goto error
     )
 )
+
+powershell -NoProfile -Command "$ErrorActionPreference='Stop'; $dir=Join-Path $env:MAVEN_PROJECTBASEDIR '.mvn/wrapper'; $expected=((Get-Content (Join-Path $dir 'maven-wrapper.properties') | Select-String '^wrapperSha256Sum=').Line -split '=',2)[1]; $actual=(Get-FileHash (Join-Path $dir 'maven-wrapper.jar') -Algorithm SHA256).Hash; if (!$expected -or $actual -ne $expected) { throw 'Maven Wrapper checksum mismatch. Remove .mvn/wrapper/maven-wrapper.jar and retry.' }"
+if ERRORLEVEL 1 goto error
 
 "%MAVEN_JAVA_EXE%" ^
   %JVM_CONFIG_MAVEN_PROPS% ^
