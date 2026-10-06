@@ -1,4 +1,5 @@
 import { test } from "node:test";
+import { choosePaymentAccounts } from "../../src/main/resources/static/js/views/accountSelections.js";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
@@ -26,6 +27,28 @@ import {
 const fixtures = JSON.parse(
   await readFile(new URL("../baseline/demo.json", import.meta.url), "utf8"),
 );
+test("account defaults and fallbacks stay distinct without discarding valid choices", () => {
+  const accounts = [{ vpa: "bob@demo" }, { vpa: "carol@demo" }];
+  assert.deepEqual(
+    choosePaymentAccounts(accounts, { senderVpa: "", receiverVpa: "" }),
+    { senderVpa: "carol@demo", receiverVpa: "bob@demo" },
+  );
+  assert.deepEqual(
+    choosePaymentAccounts(accounts, { senderVpa: "removed", receiverVpa: "bob@demo" }),
+    { senderVpa: "carol@demo", receiverVpa: "bob@demo" },
+  );
+  assert.deepEqual(
+    choosePaymentAccounts(accounts, {
+      senderVpa: "bob@demo",
+      receiverVpa: "carol@demo",
+    }),
+    { senderVpa: "bob@demo", receiverVpa: "carol@demo" },
+  );
+  assert.deepEqual(
+    choosePaymentAccounts([], { senderVpa: "removed", receiverVpa: "removed" }),
+    { senderVpa: "", receiverVpa: "" },
+  );
+});
 test("INR and chart dates preserve original formatting", () => {
   assert.equal(money(1234.5), "₹1,234.50");
   assert.equal(compactMoney(500), "₹500");

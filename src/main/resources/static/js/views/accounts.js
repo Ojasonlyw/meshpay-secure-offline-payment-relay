@@ -3,6 +3,7 @@ import { setState, getState } from "../state/store.js";
 import { $, node, emptyRow } from "../ui/dom.js";
 import { money } from "../format/money.js";
 import { refreshSection } from "../services/runtime.js";
+import { choosePaymentAccounts } from "./accountSelections.js";
 
 /** renderAccounts owns its existing dashboard behavior.
  * @param {*} accounts
@@ -11,9 +12,12 @@ import { refreshSection } from "../services/runtime.js";
 export function renderAccounts(accounts) {
   const ordered = [...accounts].sort((a, b) => a.vpa.localeCompare(b.vpa));
   setState({ accounts: ordered });
+  const selections = choosePaymentAccounts(ordered, {
+    senderVpa: $("senderVpa").value,
+    receiverVpa: $("receiverVpa").value,
+  });
   ["senderVpa", "receiverVpa"].forEach((id) => {
     const select = $(id);
-    const previous = select.value;
     select.replaceChildren(
       ...ordered.map((account) => {
         const option = node("option", "", account.vpa);
@@ -21,15 +25,7 @@ export function renderAccounts(accounts) {
         return option;
       }),
     );
-    const preferred = id === "senderVpa" ? "alice@demo" : "bob@demo";
-    select.value = ordered.some((account) => account.vpa === previous)
-      ? previous
-      : ordered.some((account) => account.vpa === preferred)
-        ? preferred
-        : (id === "receiverVpa"
-            ? ordered.find((account) => account.vpa !== $("senderVpa").value)
-                ?.vpa
-            : ordered[0]?.vpa) || "";
+    select.value = selections[id];
     select.disabled = !ordered.length;
   });
   if (
