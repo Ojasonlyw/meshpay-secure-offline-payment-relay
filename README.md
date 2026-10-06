@@ -446,4 +446,4 @@ src/main/resources/
 
 ## License
 
-No license file is included. Treat this as demonstration code unless a license is added.
+This project is licensed under the [MIT License](LICENSE).
