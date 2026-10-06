@@ -287,6 +287,20 @@
   function renderAccounts(accounts) {
     const ordered = [...accounts].sort((a, b) => a.vpa.localeCompare(b.vpa));
     state.accounts = ordered;
+    ["senderVpa", "receiverVpa"].forEach((id) => {
+      const select = $(id);
+      const previous = select.value;
+      select.replaceChildren(...ordered.map(account => {
+        const option = node("option", "", account.vpa);
+        option.value = account.vpa;
+        return option;
+      }));
+      const preferred = id === "senderVpa" ? "alice@demo" : "bob@demo";
+      select.value = ordered.some(account => account.vpa === previous) ? previous
+        : ordered.some(account => account.vpa === preferred) ? preferred
+        : (id === "receiverVpa" ? ordered.find(account => account.vpa !== $("senderVpa").value)?.vpa : ordered[0]?.vpa) || "";
+      select.disabled = !ordered.length;
+    });
     if (!state.selectedAccount || !ordered.some(a => a.vpa === state.selectedAccount))
       state.selectedAccount = ordered[0]?.vpa || null;
     const fragment = document.createDocumentFragment();
@@ -328,6 +342,8 @@
 
   function renderSummary(data) {
     renderPaymentSummary(data);
+    $("mesh-readiness").textContent = `${data.activeConnections} active links`;
+    $("footer-bridges").textContent = `${data.bridgeDevices} bridge${data.bridgeDevices === 1 ? "" : "s"}`;
     $("total-balance").textContent = money(data.totalBalance);
     document.querySelectorAll("[data-assets-total]").forEach(el => el.textContent = compactMoney(data.totalBalance));
     $("device-count").textContent = data.activeDevices;
@@ -700,6 +716,7 @@
           : failed
             ? "Partial update"
             : "Live connection";
+      $("footer-connection").textContent = $("connection-text").textContent;
       if (!failed)
         $("last-updated").textContent =
           `Updated ${new Date().toLocaleTimeString("en-IN")}`;
@@ -935,17 +952,11 @@
       $("command-search").focus();
     }
   });
-  $("applications-button").addEventListener("click", () => { location.hash = "#payment-panel"; $("senderVpa").focus(); });
   $("notifications-button").addEventListener("click", () => {
     location.hash = "#activity";
     $("activity-type").value = "SIGNATURE";
     $("activity-type").dispatchEvent(new Event("change"));
     notice(state.security?.items.length ? `${state.security.items.length} recent security event(s).` : "No security failures recorded.");
-  });
-  $("messages-button").addEventListener("click", () => {
-    location.hash = "#activity";
-    $("activity-type").value = "";
-    $("activity-type").dispatchEvent(new Event("change"));
   });
   document.addEventListener("visibilitychange", () => {
     clearTimeout(pollTimer);

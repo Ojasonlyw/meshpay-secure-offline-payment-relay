@@ -1,0 +1,17 @@
+{
+  "reference": "baseline",
+  "lockedContentReference": "cleanup",
+  "authorizedChanges": [
+    "Remove Recipients, Vaults, Reports, Earn, Invoices and the OTHER sidebar group; following navigation rows move upward",
+    "Remove Applications and Messages; remaining right-aligned topbar controls keep their styling",
+    "Search placeholder explains Enter; Ctrl/Cmd K still focuses the same input",
+    "Replace mesh-ready trend with live active-link count",
+    "Replace Cash with Ledger: demo and remove Crypto copy; metadata can reflow",
+    "Rename Connect to Refresh, route copy to Add mesh route and Total assets to Ledger balance",
+    "Sidebar footer shows live connection and bridge count with the same existing surface",
+    "Populate select options from the API while preserving Alice to Bob defaults",
+    "Decorative SVG comments and aria-hidden declarations do not change rendered pixels"
+  ],
+  "newInteractionStates": ["Failure notices may show a backend trace, copy action and dismissal", "Successful notices expire after four seconds", "Keyboard/background focus fixes do not change the resting dashboard"],
+  "policy": "Original and cleanup screenshots are immutable. Exact pixel and computed-style comparisons run against cleanup after every structural phase. The original-to-cleanup changes are restricted to the enumerated content and attributable geometry."
+}

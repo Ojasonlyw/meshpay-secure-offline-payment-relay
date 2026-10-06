@@ -53,12 +53,8 @@
           <a class="nav-link" href="#mesh"
             ><i data-lucide="radio-tower"></i><span>Mesh bridge</span></a
           >
-          <a class="nav-link" href="#accounts"
-            ><i data-lucide="users"></i><span>Recipients</span></a
-          >
-          <a class="nav-link" href="#overview"
-            ><i data-lucide="shield"></i><span>Vaults</span></a
-          >
+
+
         </section>
         <section aria-label="Insights">
           <p class="nav-label">INSIGHTS</p>
@@ -68,25 +64,15 @@
           <a class="nav-link" href="#analytics"
             ><i data-lucide="bar-chart-3"></i><span>Analytics</span></a
           >
-          <a class="nav-link" href="#activity"
-            ><i data-lucide="notebook-tabs"></i><span>Reports</span></a
-          >
+
         </section>
-        <section aria-label="Other">
-          <p class="nav-label">OTHER</p>
-          <a class="nav-link" href="#mesh"
-            ><i data-lucide="badge-indian-rupee"></i><span>Earn</span></a
-          >
-          <a class="nav-link" href="#activity"
-            ><i data-lucide="receipt-text"></i><span>Invoices</span></a
-          >
-        </section>
+
       </nav>
       <div class="sidebar-footer">
         <span class="upgrade-icon"><i data-lucide="zap"></i></span>
         <span
-          ><strong>Bridge mode</strong
-          ><small>MeshPay offline mesh</small></span
+          ><strong id="footer-connection">Connecting</strong
+          ><small id="footer-bridges">-- bridges</small></span
         >
       </div>
     </aside>
@@ -113,19 +99,15 @@
         </div>
         <label class="command-search">
           <i data-lucide="search"></i>
-          <input id="command-search" type="search" placeholder="Search or type command" aria-label="Search dashboard" />
+          <input id="command-search" type="search" placeholder="Search records; press Enter" aria-label="Search dashboard" />
           <span>Ctrl</span><kbd>K</kbd>
         </label>
         <div class="topbar-right">
-          <button class="icon-button" id="applications-button" type="button" aria-label="Applications">
-            <i data-lucide="layout-grid"></i>
-          </button>
-          <button class="icon-button" id="notifications-button" type="button" aria-label="Notifications">
+
+          <button class="icon-button" id="notifications-button" type="button" aria-label="Security notifications">
             <i data-lucide="bell"></i>
           </button>
-          <button class="icon-button" id="messages-button" type="button" aria-label="Messages">
-            <i data-lucide="message-square"></i>
-          </button>
+
           <span class="connection" id="connection" role="status"
             ><span class="live-dot"></span
             ><span id="connection-text">Connecting</span></span
@@ -140,11 +122,10 @@
             <p class="eyebrow">Total balance</p>
             <div class="balance-row">
               <h1 id="page-title"><span id="total-balance">--</span></h1>
-              <span class="trend positive">+ mesh ready</span>
+              <span class="trend positive" id="mesh-readiness">-- active links</span>
             </div>
             <div class="balance-meta">
-              <span><i data-lucide="circle-dot"></i> Cash: demo ledger</span>
-              <span><i data-lucide="circle-dot"></i> Crypto: mesh packets</span>
+              <span><i data-lucide="circle-dot"></i> Ledger: demo</span>
               <span id="last-updated">Awaiting first update</span>
             </div>
             <div class="hero-actions">
@@ -160,7 +141,7 @@
                 type="button"
                 aria-label="Refresh dashboard"
               >
-                <i data-lucide="refresh-cw"></i><span>Connect</span>
+                <i data-lucide="refresh-cw"></i><span>Refresh</span>
               </button>
             </div>
           </div>
@@ -171,7 +152,7 @@
                 ><strong id="device-count">--</strong>
               </div>
               <span class="trend positive">devices</span
-              ><svg viewBox="0 0 120 44" aria-hidden="true">
+              ><!-- Decorative sparkline; not a data series. --><svg viewBox="0 0 120 44" aria-hidden="true">
                 <path d="M4 31 C21 20 30 36 44 25 S68 10 82 18 101 30 116 13" />
               </svg>
             </article>
@@ -181,7 +162,7 @@
                 ><strong id="bridge-count">--</strong>
               </div>
               <span class="trend positive">bridges</span
-              ><svg viewBox="0 0 120 44" aria-hidden="true">
+              ><!-- Decorative sparkline; not a data series. --><svg viewBox="0 0 120 44" aria-hidden="true">
                 <path d="M4 27 C23 28 28 16 42 18 S64 34 77 22 98 9 116 18" />
               </svg>
             </article>
@@ -191,13 +172,13 @@
                 ><strong id="packet-count">--</strong>
               </div>
               <span class="trend danger">routes</span
-              ><svg viewBox="0 0 120 44" aria-hidden="true">
+              ><!-- Decorative sparkline; not a data series. --><svg viewBox="0 0 120 44" aria-hidden="true">
                 <path d="M4 13 C21 22 31 7 45 17 S68 33 81 24 96 22 116 36" />
               </svg>
             </article>
             <button class="asset-card add-card" type="button" id="add-route">
               <i data-lucide="plus"></i
-              ><span>Add another route<br />to your offline mesh</span>
+              ><span>Add mesh route</span>
             </button>
           </div>
         </section>
@@ -289,9 +270,10 @@
           </article>
           <article class="asset-flow reveal" aria-labelledby="assets-heading">
             <div class="section-heading compact">
-              <h2 id="assets-heading">Total assets</h2>
+              <h2 id="assets-heading">Ledger balance</h2>
               <strong data-assets-total>--</strong>
             </div>
+            <!-- Decorative connectors; account and ledger totals remain live. -->
             <div class="flow-board" aria-hidden="true">
               <div class="flow-stack left">
                 <span data-flow-account="0">--</span><span data-flow-account="1">--</span><span data-flow-account="2">--</span>
@@ -345,16 +327,11 @@
             <form id="payment-form">
               <label for="senderVpa">From account</label
               ><select id="senderVpa" name="senderVpa">
-                <option>alice@demo</option>
-                <option>bob@demo</option>
-                <option>carol@demo</option>
+                <option value="">Loading accounts...</option>
               </select>
               <label for="receiverVpa">To account</label
               ><select id="receiverVpa" name="receiverVpa">
-                <option>bob@demo</option>
-                <option>carol@demo</option>
-                <option>alice@demo</option>
-                <option>dave@demo</option>
+                <option value="">Loading accounts...</option>
               </select>
               <div class="form-row">
                 <div>
