@@ -11,4 +11,4 @@ public record DeviceRegistrationRequest(
         @NotBlank @Size(max = 255) String deviceName,
         @NotNull Boolean internetCapability,
         @NotBlank @Size(max = 1024) String publicKey,
-        @NotBlank String algorithm) {}
+        @NotBlank @Size(max = 32) String algorithm) {}

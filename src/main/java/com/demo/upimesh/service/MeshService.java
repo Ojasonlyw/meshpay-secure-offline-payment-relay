@@ -50,6 +50,9 @@ public class MeshService {
             if (traceId != null) MDC.put(TraceIdFilter.TRACE_ID, traceId);
             try {
                 BridgeIngestionService.IngestResult result = ingestUpload(upload);
+                if (java.util.Set.of("SETTLED", "REJECTED", "EXPIRED", "INVALID").contains(result.outcome())
+                        || ("DUPLICATE".equals(result.outcome()) && result.reason() != null))
+                    mesh.removeDelivered(upload.packet().getPacketId());
                 synchronized (results) {
                     results.add(new MeshFlushResponse.Result(upload.bridgeNodeId(),
                             upload.packet().getPacketId().substring(0, 8), result.outcome(),
@@ -71,7 +74,7 @@ public class MeshService {
         } catch (DomainException e) {
             String outcome = e instanceof DuplicatePaymentException ? "DUPLICATE"
                     : e instanceof ExpiredPacketException ? "EXPIRED"
-                    : e instanceof InsufficientBalanceException ? "REJECTED"
+                    : e instanceof InsufficientBalanceException || e instanceof DeviceRevokedException ? "REJECTED"
                     : e instanceof InvalidPacketException || e instanceof InvalidSignatureException ? "INVALID"
                     : "FAILED";
             return new BridgeIngestionService.IngestResult(outcome, null, e.getErrorCode(), null);

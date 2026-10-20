@@ -1,7 +1,14 @@
 package com.demo.upimesh.model;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.Digits;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.demo.upimesh.dto.request.DecimalAmountDeserializer;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -26,13 +33,17 @@ public class PaymentInstruction {
     private String paymentId;
 
     @NotBlank
+    @Size(max = 255)
     private String senderVpa;
 
     @NotBlank
+    @Size(max = 255)
     private String receiverVpa;
 
     @NotNull
     @DecimalMin(value = "0.00", inclusive = false)
+    @DecimalMax("1000000.00") @Digits(integer = 7, fraction = 2)
+    @JsonDeserialize(using = DecimalAmountDeserializer.class)
     private BigDecimal amount;
 
     @NotBlank
@@ -40,12 +51,16 @@ public class PaymentInstruction {
     private String nonce;     // UUID, unique per payment intent
 
     @NotNull
+    @Positive
     private Long signedAt;    // epoch millis, when sender signed
 
     @NotBlank
+    @Size(max = 64)
     private String deviceId;
 
+    @Size(max = 128)
     private String signature;
+    @Size(max = 32)
     private String signatureAlgorithm;
 
     public PaymentInstruction() {}

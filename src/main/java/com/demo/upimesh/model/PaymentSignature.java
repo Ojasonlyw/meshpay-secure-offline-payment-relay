@@ -28,6 +28,11 @@ public class PaymentSignature {
     private VerificationStatus verificationStatus;
     @Column(name = "failure_code", length = 64)
     private String failureCode;
+    @Column(name = "key_fingerprint", length = 64)
+    private String keyFingerprint;
+
+    public String getKeyFingerprint() { return keyFingerprint; }
+    public void setKeyFingerprint(String value) { keyFingerprint = value; }
 
     public Long getId() { return id; }
     public Payment getPayment() { return payment; }

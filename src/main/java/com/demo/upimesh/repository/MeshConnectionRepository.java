@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MeshConnectionRepository extends JpaRepository<MeshConnection, Long> {
-    List<MeshConnection> findAllByOrderByIdAsc();
-    List<MeshConnection> findByStatus(MeshConnection.Status status);
+    List<MeshConnection> findTop100ByOrderByIdAsc();
+    List<MeshConnection> findTop100ByStatusOrderByIdAsc(MeshConnection.Status status);
     Optional<MeshConnection> findBySourceDevice_IdAndTargetDevice_Id(Long sourceId, Long targetId);
     long countByStatus(MeshConnection.Status status);
 }

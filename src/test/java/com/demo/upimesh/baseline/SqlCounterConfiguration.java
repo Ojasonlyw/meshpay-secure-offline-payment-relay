@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Bean;
 /** Test-only counter at the JDBC boundary, including JdbcTemplate and Hibernate. */
 @TestConfiguration(proxyBeanMethods = false)
 public class SqlCounterConfiguration {
+    public static void reset() { EXECUTIONS.set(0); }
+    public static long executions() { return EXECUTIONS.get(); }
     static final AtomicLong EXECUTIONS = new AtomicLong();
 
     @Bean

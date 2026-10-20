@@ -2,7 +2,7 @@
 import { $ } from "../ui/dom.js";
 import { getState } from "../state/store.js";
 import { mutate } from "../services/mutations.js";
-import { isText, isCount } from "../api/validators.js";
+import { isText, isCount, isPaymentAmount } from "../api/validators.js";
 import { notice } from "../ui/notice.js";
 
 /** Wire this module once after the document is ready. @returns {void} */
@@ -11,14 +11,11 @@ export function init() {
     event.preventDefault();
     if (getState().mutationPending) return;
     const amount = $("amount");
-    const validAmount =
-      /^\d+(\.\d{1,2})?$/.test(amount.value) &&
-      Number(amount.value) > 0 &&
-      Number.isFinite(Number(amount.value));
+    const validAmount = isPaymentAmount(amount.value);
     amount.setCustomValidity(
       validAmount
         ? ""
-        : "Enter a positive amount with up to two decimal places.",
+        : "Enter 0.01 to 1000000.00 with up to two decimal places.",
     );
     if (!$("payment-form").reportValidity()) return;
     const body = {

@@ -6,9 +6,13 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DeviceRepository extends JpaRepository<Device, Long> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select d from Device d where d.deviceId = :deviceId")
+    Optional<Device> lockByDeviceId(@org.springframework.data.repository.query.Param("deviceId") String deviceId);
     Optional<Device> findByDeviceId(String deviceId);
-    List<Device> findAllByOrderByDeviceIdAsc();
-    List<Device> findByStatusOrderByDeviceIdAsc(Device.Status status);
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = "user")
+    List<Device> findTop100ByOrderByDeviceIdAsc();
+    List<Device> findTop100ByStatusOrderByDeviceIdAsc(Device.Status status);
     List<Device> findByStatusAndInternetCapabilityTrue(Device.Status status);
     List<Device> findByUser_VpaAndStatusAndTrustStatus(String vpa, Device.Status status,
             Device.TrustStatus trustStatus);

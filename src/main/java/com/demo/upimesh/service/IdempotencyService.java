@@ -4,113 +4,125 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.UUID;
 
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.Set;
-
-/** Distributed packet state tracking retained in Redis for the configured TTL. */
+/** Disposable replay cache. PostgreSQL remains authoritative for settlement. */
 @Service
 public class IdempotencyService {
     private static final String KEY_PREFIX = "upi:mesh:idempotency:";
-    private static final ScanOptions SCAN_OPTIONS = ScanOptions.scanOptions()
-            .match(KEY_PREFIX + "*").count(1000).build();
-
+    private static final String INDEX = "upi:mesh:packet-expirations";
+    private static final DefaultRedisScript<String> CLAIM = new DefaultRedisScript<>("""
+            redis.call('ZREMRANGEBYSCORE', KEYS[2], '-inf', ARGV[3])
+            local current = redis.call('GET', KEYS[1])
+            if not current or current == 'FAILED_RETRYABLE' or string.match(current, '^FAILED_RETRYABLE|')
+                or (ARGV[4] ~= '' and current == ARGV[4] and not string.match(current, '^PROCESSING')) then
+                local value = 'PROCESSING|' .. ARGV[1]
+                redis.call('SET', KEYS[1], value, 'EX', ARGV[2])
+                redis.call('ZADD', KEYS[2], ARGV[3] + ARGV[2], KEYS[1])
+                redis.call('EXPIRE', KEYS[2], ARGV[5])
+                return value
+            end
+            return current
+            """, String.class);
+    private static final DefaultRedisScript<Long> FINISH = new DefaultRedisScript<>("""
+            if redis.call('GET', KEYS[1]) ~= 'PROCESSING|' .. ARGV[1] then return 0 end
+            redis.call('SET', KEYS[1], ARGV[2] .. '|' .. ARGV[1], 'EX', ARGV[3])
+            redis.call('ZADD', KEYS[2], ARGV[4] + ARGV[3], KEYS[1])
+            redis.call('EXPIRE', KEYS[2], ARGV[5])
+            return 1
+            """, Long.class);
+    private static final DefaultRedisScript<Long> COUNT = new DefaultRedisScript<>("""
+            redis.call('ZREMRANGEBYSCORE', KEYS[1], '-inf', ARGV[1])
+            return redis.call('ZCARD', KEYS[1])
+            """, Long.class);
+    private static final DefaultRedisScript<Long> REPAIR = new DefaultRedisScript<>("""
+            if redis.call('GET', KEYS[1]) ~= ARGV[1] then return 0 end
+            redis.call('SET', KEYS[1], ARGV[2], 'EX', ARGV[3])
+            redis.call('ZADD', KEYS[2], ARGV[4] + ARGV[3], KEYS[1])
+            redis.call('EXPIRE', KEYS[2], ARGV[5])
+            return 1
+            """, Long.class);
     private final StringRedisTemplate redis;
-    private final Duration ttl;
+    private final long leaseSeconds;
+    private final long retentionSeconds;
 
     public IdempotencyService(StringRedisTemplate redis,
-            @Value("${upi.mesh.idempotency-ttl-seconds:86400}") long ttlSeconds) {
-        if (ttlSeconds <= 0) {
-            throw new IllegalArgumentException("Idempotency TTL must be positive");
-        }
+            @Value("${upi.mesh.processing-lease-seconds:90}") long leaseSeconds,
+            @Value("${upi.mesh.replay-retention-seconds:86400}") long retentionSeconds) {
+        if (leaseSeconds <= 0 || retentionSeconds <= 0) throw new IllegalArgumentException("Positive cache durations required");
         this.redis = redis;
-        this.ttl = Duration.ofSeconds(ttlSeconds);
+        this.leaseSeconds = leaseSeconds;
+        this.retentionSeconds = retentionSeconds;
     }
 
-    public enum PacketState {
-        RECEIVED,
-        PROCESSING,
-        SETTLED,
-        FAILED_RETRYABLE,
-        REJECTED,
-        EXPIRED
+    public enum PacketState { RECEIVED, PROCESSING, SETTLED, FAILED_RETRYABLE, REJECTED, EXPIRED }
+    public record ClaimResult(boolean claimed, PacketState state, String token) {
+        String encoded() { return state.name() + (token == null ? "" : "|" + token); }
     }
 
-    public record ClaimResult(boolean claimed, PacketState state) {}
+    public boolean claim(String hash) { return claimProcessing(hash).claimed(); }
+    public ClaimResult claimProcessing(String hash) { return claim(hash, ""); }
 
-    /** Returns true for the first claim. Kept for lower-level idempotency tests. */
-    public boolean claim(String packetHash) {
-        return claimProcessing(packetHash).claimed();
+    /** Called only after verified database lookup disproves a stale terminal cache entry. */
+    public ClaimResult reclaimAfterDatabaseCheck(String hash, ClaimResult observed) {
+        return claim(hash, observed.encoded());
     }
 
-    public ClaimResult claimProcessing(String packetHash) {
-        String key = key(packetHash);
-        Boolean claimed = redis.opsForValue().setIfAbsent(key, PacketState.PROCESSING.name(), ttl);
-        if (Boolean.TRUE.equals(claimed)) {
-            return new ClaimResult(true, PacketState.PROCESSING);
-        }
-
-        PacketState current = getState(packetHash);
-        if (current == PacketState.FAILED_RETRYABLE) {
-            redis.opsForValue().set(key, PacketState.PROCESSING.name(), ttl);
-            return new ClaimResult(true, PacketState.PROCESSING);
-        }
-        return new ClaimResult(false, current);
+    private ClaimResult claim(String hash, String expected) {
+        String token = UUID.randomUUID().toString();
+        String value = redis.execute(CLAIM, List.of(key(hash), INDEX), token,
+                Long.toString(leaseSeconds), Long.toString(now()), expected, indexRetention());
+        if (value == null) throw new IllegalStateException("Redis claim returned no result");
+        ClaimResult parsed = parse(value);
+        return new ClaimResult(token.equals(parsed.token()), parsed.state(), parsed.token());
     }
 
-    public PacketState getState(String packetHash) {
-        String value = redis.opsForValue().get(key(packetHash));
-        if (value == null) {
-            return null;
-        }
-        try {
-            return PacketState.valueOf(value);
-        } catch (IllegalArgumentException e) {
-            return PacketState.RECEIVED;
-        }
+    private ClaimResult parse(String value) {
+        if (value == null) return new ClaimResult(false, null, null);
+        String[] parts = value.split("\\|", 2);
+        PacketState state;
+        try { state = PacketState.valueOf(parts[0]); }
+        catch (IllegalArgumentException e) { state = PacketState.RECEIVED; }
+        return new ClaimResult(false, state, parts.length == 2 ? parts[1] : null);
     }
 
-    public void markSettled(String packetHash) {
-        mark(packetHash, PacketState.SETTLED);
-    }
+    public PacketState getState(String hash) { return parse(redis.opsForValue().get(key(hash))).state(); }
 
-    public void markRejected(String packetHash) {
-        mark(packetHash, PacketState.REJECTED);
+    /** Database terminal results are immutable. CAS repair cannot overwrite a newer cache attempt. */
+    public void repairTerminal(String hash, ClaimResult observed, PacketState databaseState) {
+        if (databaseState != PacketState.SETTLED && databaseState != PacketState.REJECTED
+                && databaseState != PacketState.EXPIRED) throw new IllegalArgumentException("Terminal DB state required");
+        redis.execute(REPAIR, List.of(key(hash), INDEX), observed.encoded(), databaseState.name(),
+                Long.toString(retentionSeconds), Long.toString(now()), indexRetention());
     }
+    public void markSettled(String hash, String token) { mark(hash, token, PacketState.SETTLED); }
+    public void markRejected(String hash, String token) { mark(hash, token, PacketState.REJECTED); }
+    public void markExpired(String hash, String token) { mark(hash, token, PacketState.EXPIRED); }
+    public void markFailedRetryable(String hash, String token) { mark(hash, token, PacketState.FAILED_RETRYABLE); }
 
-    public void markExpired(String packetHash) {
-        mark(packetHash, PacketState.EXPIRED);
+    private void mark(String hash, String token, PacketState state) {
+        if (token == null) throw new IllegalArgumentException("Attempt token required");
+        redis.execute(FINISH, List.of(key(hash), INDEX), token, state.name(),
+                Long.toString(retentionSeconds), Long.toString(now()), indexRetention());
     }
+    private String indexRetention() { return Long.toString(Math.max(leaseSeconds, retentionSeconds)); }
+    private long now() { return System.currentTimeMillis() / 1000; }
+    private String key(String hash) { return KEY_PREFIX + hash; }
 
-    public void markFailedRetryable(String packetHash) {
-        mark(packetHash, PacketState.FAILED_RETRYABLE);
-    }
-
-    private void mark(String packetHash, PacketState state) {
-        redis.opsForValue().set(key(packetHash), state.name(), ttl);
-    }
-
-    private String key(String packetHash) {
-        return KEY_PREFIX + packetHash;
-    }
-
-    /** Approximate count when claims or expirations occur during the scan. */
+    /** Maintained expiry index: dashboard reads do not scan the key namespace. */
     public int size() {
-        Set<String> keys = new HashSet<>();
-        try (Cursor<String> cursor = redis.scan(SCAN_OPTIONS)) {
-            cursor.forEachRemaining(keys::add);
-        }
-        return keys.size();
+        Long count = redis.execute(COUNT, List.of(INDEX), Long.toString(now()));
+        return count == null ? 0 : (int) Math.min(Integer.MAX_VALUE, count);
     }
 
-    /** Demo/test reset; other Redis namespaces are untouched. */
+    /** Infrequent demo/test reset; other namespaces are untouched. */
     public void clear() {
-        try (Cursor<String> cursor = redis.scan(SCAN_OPTIONS)) {
-            while (cursor.hasNext()) {
-                redis.delete(cursor.next());
-            }
+        try (Cursor<String> cursor = redis.scan(ScanOptions.scanOptions().match(KEY_PREFIX + "*").count(500).build())) {
+            while (cursor.hasNext()) redis.delete(cursor.next());
         }
+        redis.delete(INDEX);
     }
 }

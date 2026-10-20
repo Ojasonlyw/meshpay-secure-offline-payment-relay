@@ -12,6 +12,13 @@ import com.demo.upimesh.exception.InvalidPacketException;
 import com.demo.upimesh.exception.DomainException;
 import com.demo.upimesh.exception.InsufficientBalanceException;
 import com.demo.upimesh.exception.SettlementException;
+import com.demo.upimesh.exception.DeviceRevokedException;
+import com.demo.upimesh.model.Device;
+import com.demo.upimesh.model.DeviceKey;
+import com.demo.upimesh.model.PaymentSignature;
+import com.demo.upimesh.repository.DeviceRepository;
+import com.demo.upimesh.repository.DeviceKeyRepository;
+import com.demo.upimesh.repository.PaymentSignatureRepository;
 import com.demo.upimesh.repository.AccountRepository;
 import com.demo.upimesh.model.PaymentInstruction;
 import com.demo.upimesh.model.Transaction;
@@ -28,11 +35,8 @@ import java.time.Instant;
  * Where the actual ledger update happens. Wrapped in a DB transaction so either
  * BOTH the debit and credit happen, or neither does.
  *
- * The @Version column on Account gives us optimistic locking — if two threads
- * somehow get past idempotency and both try to debit the same account, the
- * second one will fail with OptimisticLockException rather than corrupting
- * the balance. (In a demo the idempotency layer should always catch this first,
- * but defense in depth.)
+ * Account versions also protect distinct payments spending the same balance.
+ * Such payments may conflict independently of replay detection and should be retried.
  */
 @Service
 public class SettlementService {
@@ -44,17 +48,28 @@ public class SettlementService {
     private final PaymentRepository payments;
     private final LedgerEntryRepository ledger;
 
+    private final DeviceRepository devices;
+    private final DeviceKeyRepository keys;
+    private final PaymentSignatureRepository signatures;
+    private final DeviceSignatureService signatureService;
+
     public SettlementService(AccountRepository accounts, TransactionRepository transactions,
-                             PaymentRepository payments, LedgerEntryRepository ledger) {
+                             PaymentRepository payments, LedgerEntryRepository ledger, DeviceRepository devices,
+                             DeviceKeyRepository keys, PaymentSignatureRepository signatures,
+                             DeviceSignatureService signatureService) {
         this.accounts = accounts;
         this.transactions = transactions;
         this.payments = payments;
         this.ledger = ledger;
+        this.devices = devices;
+        this.keys = keys;
+        this.signatures = signatures;
+        this.signatureService = signatureService;
     }
 
-    // Insufficient funds is raised only after recording a rejection, before any balance changes.
-    // Commit that audit record; every other failure must roll back the ledger transaction.
-    @Transactional(noRollbackFor = InsufficientBalanceException.class)
+    // Business rejections commit their audit record before any balance changes.
+    // Every other failure must roll back the ledger transaction.
+    @Transactional(noRollbackFor = {InsufficientBalanceException.class, DeviceRevokedException.class})
     public Transaction settle(PaymentInstruction instruction, String packetHash,
                               String bridgeNodeId, int hopCount) {
         try {
@@ -68,15 +83,35 @@ public class SettlementService {
 
     private Transaction settleWithinTransaction(PaymentInstruction instruction, String packetHash,
                                                String bridgeNodeId, int hopCount) {
+        if (instruction == null || instruction.getAmount() == null || instruction.getAmount().signum() <= 0)
+            throw new InvalidPacketException("Amount must be positive");
+        // Revocation shares this order: device -> active key -> payment; balances use optimistic versions.
+        // Holding the device lock through commit serializes settlement with committed revocations.
+        Device device = devices.lockByDeviceId(instruction.getDeviceId()).orElse(null);
+        DeviceKey key = device == null ? null : keys.lockActiveKey(device.getId()).orElse(null);
         Payment payment = payments.lockByPacketHash(packetHash).orElseThrow(PaymentNotFoundException::new);
         if (!PaymentLifecycleService.canSettle(payment)) throw new DuplicatePaymentException();
+        PaymentSignature evidence = signatures.findByPayment_Id(payment.getId()).orElse(null);
+        if (device == null || device.getStatus() != Device.Status.ACTIVE
+                || device.getTrustStatus() != Device.TrustStatus.TRUSTED
+                || key == null || key.getRevokedAt() != null || evidence == null
+                || evidence.getVerificationStatus() != PaymentSignature.VerificationStatus.VERIFIED
+                || evidence.getDevice() == null || !device.getId().equals(evidence.getDevice().getId())
+                || !DeviceSignatureService.sha256Hex(signatureService.canonicalPayload(instruction))
+                    .equals(evidence.getCanonicalPayloadHash())
+                || (evidence.getKeyFingerprint() != null && !key.getKeyFingerprint().equals(evidence.getKeyFingerprint()))
+                || (evidence.getKeyFingerprint() == null && !signatureService.verify(instruction).valid())) {
+            DeviceRevokedException rejection = new DeviceRevokedException();
+            payment.setStatus(Payment.Status.REJECTED);
+            payment.setFailureCode(rejection.getErrorCode());
+            payment.setFailureMessage(rejection.getPublicMessage());
+            recordRejected(payment, instruction, packetHash, bridgeNodeId, hopCount);
+            throw rejection;
+        }
+        if (evidence.getKeyFingerprint() == null) evidence.setKeyFingerprint(key.getKeyFingerprint());
         payment.setStatus(Payment.Status.PROCESSING);
         payment.setFailureCode(null);
         payment.setFailureMessage(null);
-        if (instruction == null || instruction.getAmount() == null
-                || instruction.getAmount().signum() <= 0) {
-            throw new InvalidPacketException("Amount must be positive");
-        }
 
         Account sender = accounts.findById(payment.getSenderVpa())
                 .orElseThrow(() -> new AccountNotFoundException(
@@ -88,8 +123,7 @@ public class SettlementService {
 
         BigDecimal amount = payment.getAmount();
         if (sender.getBalance().compareTo(amount) < 0) {
-            log.warn("Insufficient balance: {} has ₹{}, tried to send ₹{}",
-                    sender.getVpa(), sender.getBalance(), amount);
+            log.warn("Insufficient balance paymentId={}", payment.getPaymentId());
             payment.setStatus(Payment.Status.REJECTED);
             InsufficientBalanceException rejection = new InsufficientBalanceException();
             payment.setFailureCode(rejection.getErrorCode());
@@ -122,9 +156,8 @@ public class SettlementService {
         payment.setStatus(Payment.Status.SETTLED);
         payment.setSettledAt(tx.getSettledAt());
 
-        log.info("SETTLED ₹{} from {} to {} (packetHash={}, bridge={}, hops={})",
-                amount, sender.getVpa(), receiver.getVpa(),
-                packetHash.substring(0, 12) + "...", bridgeNodeId, hopCount);
+        log.info("Payment settled paymentId={} packetHash={} bridge={} hops={}",
+                payment.getPaymentId(), packetHash, bridgeNodeId, hopCount);
 
         return tx;
     }

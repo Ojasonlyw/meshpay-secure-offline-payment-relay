@@ -9,6 +9,14 @@ export const isNumber = (value) =>
     (typeof value === "string" && value.trim() !== "")) &&
   Number.isFinite(Number(value));
 
+/** @param {string} value Exact demo amount, from 0.01 to 1000000.00. @returns {boolean} */
+export const isPaymentAmount = (value) =>
+  typeof value === "string" &&
+  value.length <= 32 &&
+  /^\d+(\.\d{1,2})?$/.test(value) &&
+  Number(value) > 0 &&
+  Number(value) <= 1000000;
+
 /** @param {*} value @returns {boolean} */
 export const isCount = (value) => Number.isInteger(value) && value >= 0;
 

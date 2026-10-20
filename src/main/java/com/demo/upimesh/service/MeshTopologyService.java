@@ -35,12 +35,12 @@ public class MeshTopologyService {
 
     @Transactional(readOnly = true)
     public List<Device> activeDevices() {
-        return devices.findByStatusOrderByDeviceIdAsc(Device.Status.ACTIVE);
+        return devices.findTop100ByStatusOrderByDeviceIdAsc(Device.Status.ACTIVE);
     }
 
     @Transactional(readOnly = true)
     public List<MeshConnection> activeConnections() {
-        return connections.findByStatus(MeshConnection.Status.ACTIVE).stream()
+        return connections.findTop100ByStatusOrderByIdAsc(MeshConnection.Status.ACTIVE).stream()
                 .filter(c -> c.getSourceDevice().getStatus() == Device.Status.ACTIVE
                         && c.getTargetDevice().getStatus() == Device.Status.ACTIVE).toList();
     }
@@ -70,7 +70,7 @@ public class MeshTopologyService {
 
     @Transactional(readOnly = true)
     public List<MeshConnectionResponse> listConnections() {
-        return connections.findAllByOrderByIdAsc().stream().map(this::response).toList();
+        return connections.findTop100ByOrderByIdAsc().stream().map(this::response).toList();
     }
 
     @Transactional

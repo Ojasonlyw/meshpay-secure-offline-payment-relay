@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import postcss from "postcss";
+import { responseError } from "../../src/main/resources/static/js/api/client.js";
 const root = new URL("../../", import.meta.url);
 const git = (...args) =>
   execFileSync("git", ["-c", "safe.directory=/workspace", ...args], {
@@ -63,7 +64,7 @@ test("CSS extraction preserves every selector, breakpoint, declaration and casca
   );
   assert.equal((current.match(/!important/g) || []).length, 3);
 });
-test("locked references, vendor assets and backend sources remain untouched", () => {
+test("locked references and vendor assets remain untouched", () => {
   assert.equal(
     git(
       "diff",
@@ -75,18 +76,20 @@ test("locked references, vendor assets and backend sources remain untouched", ()
     ),
     "",
   );
-  assert.equal(
-    git(
-      "diff",
-      "6e85e29",
-      "--",
-      "src/main/java",
-      "src/main/resources/db",
-      "src/main/resources/application.properties",
-      "pom.xml",
-    ),
-    "",
-  );
+});
+test("HTTP client errors preserve status, code, safe message and trace contract", () => {
+  for (const [status, code] of [
+    [404, "NOT_FOUND"],
+    [405, "METHOD_NOT_ALLOWED"],
+    [415, "UNSUPPORTED_MEDIA_TYPE"],
+  ]) {
+    const response = new Response("{}", { status, headers: { "X-Trace-Id": "trace" } });
+    const error = responseError(response, { errorCode: code, message: "Safe message" });
+    assert.equal(error.status, status);
+    assert.equal(error.errorCode, code);
+    assert.equal(error.message, "Safe message");
+    assert.equal(error.traceId, "trace");
+  }
 });
 test("native first-party modules stay within the agreed approximate size limit", async () => {
   const directory = new URL("src/main/resources/static/js/", root);

@@ -44,6 +44,26 @@ public class PaymentLifecycleService {
         return payment;
     }
 
+    @Transactional(readOnly = true)
+    public java.util.Optional<Payment> findExisting(PaymentInstruction instruction, String hash) {
+        var existing = payments.findByPaymentId(UUID.fromString(instruction.getPaymentId()));
+        if (existing.isPresent() && (!hash.equals(existing.get().getPacketHash())
+                || !UUID.fromString(instruction.getNonce()).equals(existing.get().getNonce())))
+            throw new DuplicatePaymentException();
+        return existing;
+    }
+
+    @Transactional(readOnly = true)
+    public Payment.Status statusByHash(String hash) {
+        return payments.findByPacketHash(hash).map(Payment::getStatus).orElse(null);
+    }
+
+    @Transactional(readOnly = true)
+    public Long transactionId(Payment payment) {
+        var ids = jdbc.queryForList("select id from transactions where payment_id=?", Long.class, payment.getId());
+        return ids.isEmpty() ? null : ids.get(0);
+    }
+
     public static boolean canSettle(Payment payment) {
         return payment.getStatus() == Payment.Status.PENDING
                 || (payment.getStatus() == Payment.Status.FAILED && RETRYABLE.contains(payment.getFailureCode()));

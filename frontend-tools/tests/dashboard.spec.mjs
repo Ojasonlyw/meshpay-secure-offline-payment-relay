@@ -56,7 +56,8 @@ test("send, four gossip rounds, settle once, reconcile and duplicate replay", as
   );
   await page.locator("#flush").click();
   const second = await (await flushed).json();
-  expect(second.results.every((item) => item.outcome === "DUPLICATE")).toBeTruthy();
+  expect(second.uploadsAttempted).toBe(0);
+  expect(second.results).toEqual([]);
   expect(await (await request.get("/api/accounts")).json()).toEqual(settled);
   expect(
     (await (await request.get("/api/reconciliation")).json()).balanced,
