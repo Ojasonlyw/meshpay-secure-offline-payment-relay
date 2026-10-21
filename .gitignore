@@ -7,6 +7,10 @@ target/
 .vscode/
 .DS_Store
 .env
+.env.*
+!*.env.example
+deploy/backups/
+__pycache__/
 frontend-tools/node_modules/
 frontend-tools/actual/
 frontend-tools/test-results/

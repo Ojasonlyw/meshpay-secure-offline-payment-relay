@@ -1,5 +1,10 @@
 name: Frontend verification
-on: [push, pull_request]
+on:
+  push:
+    branches-ignore: [main] # main is verified by CD through workflow_call.
+    tags-ignore: ["**"]
+  pull_request:
+  workflow_call:
 permissions:
   contents: read
 jobs:
@@ -7,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
       - name: Start isolated Java 17 dashboard and data services
@@ -30,7 +35,7 @@ jobs:
         run: |
           mkdir -p frontend-tools/actual
           docker compose -f frontend-tools/compose.yaml logs app > frontend-tools/actual/app.log
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: frontend-reports

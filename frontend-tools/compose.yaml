@@ -24,6 +24,7 @@ services:
     working_dir: /workspace
     command: [bash, ./mvnw, -DskipTests, spring-boot:run]
     environment:
+      SERVER_ADDRESS: 0.0.0.0
       DB_URL: jdbc:postgresql://postgres:5432/meshpay_frontend
       DB_USERNAME: meshpay_frontend
       DB_PASSWORD: meshpay_frontend

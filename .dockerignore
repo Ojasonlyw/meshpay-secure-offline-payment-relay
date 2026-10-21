@@ -1,0 +1,9 @@
+# Only application build inputs enter the context.
+**
+!pom.xml
+!mvnw
+!.mvn/
+!.mvn/wrapper/
+!.mvn/wrapper/maven-wrapper.properties
+!src/
+!src/**
