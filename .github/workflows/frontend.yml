@@ -33,14 +33,15 @@ jobs:
       - name: Collect application logs
         if: always()
         run: |
-          mkdir -p frontend-tools/actual
-          docker compose -f frontend-tools/compose.yaml logs app > frontend-tools/actual/app.log
+          mkdir -p "$RUNNER_TEMP/frontend-reports"
+          docker compose -f frontend-tools/compose.yaml logs app \
+            > "$RUNNER_TEMP/frontend-reports/app.log" 2>&1 || true
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: frontend-reports
           path: |
-            frontend-tools/actual/
+            ${{ runner.temp }}/frontend-reports/
             frontend-tools/test-results/
             frontend-tools/playwright-report/
             frontend-tools/measurements/after-lighthouse.json
