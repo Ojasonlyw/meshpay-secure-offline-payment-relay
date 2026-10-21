@@ -67,29 +67,37 @@ public class DeviceSignatureService {
         }
     }
 
-    public record Verification(boolean valid, String failureCode) {}
+    public record Verification(boolean valid, String failureCode, Long deviceId, String keyFingerprint) {}
 
-    /** Returning a failure lets the audit transaction commit before ingestion rejects it. */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Verification verifyAndRecord(Long paymentId, PaymentInstruction instruction) {
-        Payment payment = payments.findById(paymentId).orElseThrow();
+    /** Pure authenticity check: no payment identity or audit row is reserved here. */
+    @Transactional(readOnly = true)
+    public Verification verify(PaymentInstruction instruction) {
         Device device = devices.findByDeviceId(instruction.getDeviceId()).orElse(null);
-        String failure = verify(instruction, device);
-        PaymentSignature record = signatures.findByPayment_Id(paymentId).orElseGet(PaymentSignature::new);
-        record.setPayment(payment);
-        record.setDevice(device);
-        record.setSignature(instruction.getSignature());
-        record.setSignatureAlgorithm(instruction.getSignatureAlgorithm());
-        record.setCanonicalPayloadHash(sha256Hex(canonicalPayload(instruction)));
-        record.setVerifiedAt(Instant.now());
-        record.setVerificationStatus(failure == null
-                ? PaymentSignature.VerificationStatus.VERIFIED : PaymentSignature.VerificationStatus.FAILED);
-        record.setFailureCode(failure);
-        signatures.saveAndFlush(record);
-        return new Verification(failure == null, failure);
+        DeviceKey key = device == null ? null : keys.findByDevice_IdAndActiveTrue(device.getId()).orElse(null);
+        String failure = failure(instruction, device, key);
+        return new Verification(failure == null, failure, device == null ? null : device.getId(),
+                key == null ? null : key.getKeyFingerprint());
     }
 
-    private String verify(PaymentInstruction instruction, Device device) {
+    /** The one-row evidence is written only for a verified canonical identity; retries preserve it. */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void recordVerified(Long paymentId, PaymentInstruction instruction, Verification verification) {
+        if (!verification.valid()) throw new IllegalArgumentException("Verified instruction required");
+        Payment payment = payments.lockById(paymentId).orElseThrow();
+        if (signatures.findByPayment_Id(paymentId).isPresent()) return;
+        PaymentSignature record = new PaymentSignature();
+        record.setPayment(payment);
+        record.setDevice(devices.getReferenceById(verification.deviceId()));
+        record.setSignature(instruction.getSignature());
+        record.setSignatureAlgorithm(instruction.getSignatureAlgorithm());
+        record.setKeyFingerprint(verification.keyFingerprint());
+        record.setCanonicalPayloadHash(sha256Hex(canonicalPayload(instruction)));
+        record.setVerifiedAt(Instant.now());
+        record.setVerificationStatus(PaymentSignature.VerificationStatus.VERIFIED);
+        signatures.saveAndFlush(record);
+    }
+
+    private String failure(PaymentInstruction instruction, Device device, DeviceKey key) {
         if (instruction.getSignature() == null || instruction.getSignature().isBlank()) return "MISSING_SIGNATURE";
         if (!ALGORITHM.equals(instruction.getSignatureAlgorithm())) return "UNSUPPORTED_ALGORITHM";
         if (device == null) return "UNKNOWN_DEVICE";
@@ -98,7 +106,6 @@ public class DeviceSignatureService {
         if (device.getTrustStatus() != Device.TrustStatus.TRUSTED) return "UNTRUSTED_DEVICE";
         if (!device.getUser().getVpa().equals(instruction.getSenderVpa())
                 || !"ACTIVE".equals(device.getUser().getStatus())) return "WRONG_DEVICE_OWNER";
-        DeviceKey key = keys.findByDevice_IdAndActiveTrue(device.getId()).orElse(null);
         if (key == null || key.getRevokedAt() != null) return "NO_ACTIVE_KEY";
         if (!ALGORITHM.equals(key.getAlgorithm())) return "UNSUPPORTED_ALGORITHM";
         try {

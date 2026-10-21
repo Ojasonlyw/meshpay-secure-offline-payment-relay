@@ -78,7 +78,11 @@ public class DeviceService {
 
     @Transactional(readOnly = true)
     public List<DeviceResponse> list() {
-        return devices.findAllByOrderByDeviceIdAsc().stream().map(d -> response(d, activeKey(d))).toList();
+        List<Device> listed = devices.findTop100ByOrderByDeviceIdAsc();
+        if (listed.isEmpty()) return List.of();
+        var activeKeys = keys.findByDevice_IdInAndActiveTrue(listed.stream().map(Device::getId).toList()).stream()
+                .collect(java.util.stream.Collectors.toMap(k -> k.getDevice().getId(), k -> k));
+        return listed.stream().map(d -> response(d, activeKeys.get(d.getId()))).toList();
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +93,9 @@ public class DeviceService {
 
     @Transactional
     public DeviceResponse update(String deviceId, DeviceStatusUpdateRequest request) {
-        Device device = devices.findByDeviceId(deviceId).orElseThrow(DeviceNotFoundException::new);
+        // Shared lock order with settlement: device, active key, then payment (if any).
+        Device device = devices.lockByDeviceId(deviceId).orElseThrow(DeviceNotFoundException::new);
+        DeviceKey key = keys.lockActiveKey(device.getId()).orElse(null);
         if (request.status() == null && request.trustStatus() == null)
             throw new InvalidPacketException("Status or trust status required");
         if (device.getStatus() == Device.Status.REVOKED && request.status() != null
@@ -97,6 +103,10 @@ public class DeviceService {
             throw new DeviceConflictException("Revoked devices cannot be reactivated");
         if (request.status() != null) device.setStatus(request.status());
         if (request.trustStatus() != null) device.setTrustStatus(request.trustStatus());
+        if (device.getStatus() == Device.Status.REVOKED && key != null) {
+            key.setActive(false);
+            key.setRevokedAt(java.time.Instant.now());
+        }
         return response(devices.saveAndFlush(device), activeKey(device));
     }
 

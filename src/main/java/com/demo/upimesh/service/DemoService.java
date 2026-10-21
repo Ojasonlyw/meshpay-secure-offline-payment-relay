@@ -9,7 +9,6 @@ import com.demo.upimesh.model.MeshPacket;
 import com.demo.upimesh.model.PaymentInstruction;
 import com.demo.upimesh.repository.DeviceRepository;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -41,13 +40,9 @@ public class DemoService {
 
     public MeshPacket createPacket(String senderVpa, String receiverVpa,
             BigDecimal amount, String pin, int ttl, String deviceId) throws Exception {
-        try {
-            if (amount == null || amount.signum() <= 0
-                    || amount.setScale(2, RoundingMode.UNNECESSARY).precision() > 19)
-                throw new InvalidPacketException("Invalid amount");
-        } catch (ArithmeticException e) {
-            throw new InvalidPacketException("Amount must have at most two decimal places", e);
-        }
+        if (amount == null || amount.signum() <= 0
+                || amount.scale() > 2 || amount.compareTo(new BigDecimal("1000000.00")) > 0)
+            throw new InvalidPacketException("Invalid amount");
         PaymentInstruction instruction = new PaymentInstruction(UUID.randomUUID().toString(),
                 senderVpa, receiverVpa, amount, UUID.randomUUID().toString(),
                 Instant.now().toEpochMilli(), deviceId);

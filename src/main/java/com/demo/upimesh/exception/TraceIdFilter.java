@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Component
+@org.springframework.core.annotation.Order(org.springframework.core.Ordered.HIGHEST_PRECEDENCE)
 public class TraceIdFilter extends OncePerRequestFilter {
     public static final String TRACE_ID = "traceId";
 

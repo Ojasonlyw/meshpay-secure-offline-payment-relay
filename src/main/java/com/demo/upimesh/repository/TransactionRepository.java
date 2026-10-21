@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findTop20ByOrderByIdDesc();
+    @Query("select t.payment.id as paymentId, t.id as transactionId from Transaction t where t.payment.id in :ids")
+    List<PaymentTransaction> findIdsByPaymentIds(@Param("ids") java.util.Collection<Long> ids);
+    interface PaymentTransaction { Long getPaymentId(); Long getTransactionId(); }
     boolean existsByPacketHash(String packetHash);
     long countByStatus(Transaction.Status status);
     @Query("select coalesce(sum(t.amount), 0) from Transaction t where t.status = :status")

@@ -1,0 +1,51 @@
+name: Frontend verification
+on:
+  push:
+    branches-ignore: [main] # main is verified by CD through workflow_call.
+    tags-ignore: ["**"]
+  pull_request:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Start isolated Java 17 dashboard and data services
+        run: docker compose -f frontend-tools/compose.yaml up -d app
+      - name: Install development-only tooling in pinned browser container
+        run: docker compose -f frontend-tools/compose.yaml run --rm tools npm ci
+      - name: Lint, formatting and unit checks
+        run: |
+          docker compose -f frontend-tools/compose.yaml run --rm tools npm run lint
+          docker compose -f frontend-tools/compose.yaml run --rm tools npm run format:check
+          docker compose -f frontend-tools/compose.yaml run --rm tools npm test
+      - name: Browser behavior and real settlement invariants
+        run: docker compose -f frontend-tools/compose.yaml run --rm tools npm run e2e
+      - name: Visual, computed-style and accessibility checks
+        run: docker compose -f frontend-tools/compose.yaml run --rm tools npm run visual
+      - name: Lighthouse accessibility must not regress
+        run: docker compose -f frontend-tools/compose.yaml run --rm tools npm run lighthouse
+      - name: Collect application logs
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/frontend-reports"
+          docker compose -f frontend-tools/compose.yaml logs app \
+            > "$RUNNER_TEMP/frontend-reports/app.log" 2>&1 || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: frontend-reports
+          path: |
+            ${{ runner.temp }}/frontend-reports/
+            frontend-tools/test-results/
+            frontend-tools/playwright-report/
+            frontend-tools/measurements/after-lighthouse.json
+          if-no-files-found: warn
+      - name: Stop isolated services without deleting stored data
+        if: always()
+        run: docker compose -f frontend-tools/compose.yaml down

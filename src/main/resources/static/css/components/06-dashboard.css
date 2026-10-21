@@ -1,0 +1,250 @@
+/* Ordered extraction 6; preserve source-order cascade. */
+.activity-section summary::-webkit-details-marker {
+  display: none;
+}
+.activity-section details[open] summary > svg {
+  transform: rotate(180deg);
+}
+#log {
+  max-height: 240px;
+  margin: 12px 0 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+#log li:not(.empty-state) {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--white-7);
+  font-size: 11px;
+}
+#log time {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+.notice {
+  margin-top: 14px;
+  border: 1px solid rgb(50 212 109 / 28%);
+  border-radius: 7px;
+  padding: 11px 14px;
+  color: #c7ffd8;
+  background: rgb(50 212 109 / 9%);
+}
+.notice.failure,
+.section-error {
+  color: #ffc1c1;
+  border-color: rgb(255 62 62 / 22%);
+  background: rgb(255 62 62 / 9%);
+}
+.section-error {
+  border: 1px solid;
+  border-radius: 7px;
+  padding: 9px 11px;
+  font-size: 11px;
+}
+dialog {
+  width: min(430px, calc(100% - 32px));
+  padding: 24px;
+  color: white;
+}
+dialog::backdrop {
+  background: rgb(0 0 0 / 72%);
+  backdrop-filter: blur(8px);
+}
+dialog p {
+  margin-top: 9px;
+  color: var(--muted);
+}
+.dialog-icon {
+  width: 42px;
+  height: 42px;
+  color: var(--red);
+}
+.dialog-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  border: 0;
+  background: rgb(0 0 0 / 66%);
+}
+.spinning svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1150px) {
+  :root {
+    --sidebar: 78px;
+  }
+  .sidebar {
+    padding: 22px 12px;
+  }
+  .brand {
+    justify-content: center;
+  }
+  .brand span:last-child,
+  .sidebar-collapse,
+  .nav-label,
+  .nav-link span:not(.nav-badge):not(.nav-chip),
+  .sidebar-footer {
+    display: none;
+  }
+  .nav-link {
+    justify-content: center;
+  }
+  .topbar {
+    grid-template-columns: 1fr minmax(230px, 340px) auto;
+  }
+  .hero-grid,
+  .analytics-grid,
+  .operations-grid {
+    grid-template-columns: 1fr;
+  }
+  .bottom-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cashflow-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --sidebar: 236px;
+  }
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .page {
+    margin-left: 0;
+  }
+  .topbar {
+    grid-template-columns: auto 1fr auto;
+    height: auto;
+    min-height: 64px;
+    padding: 10px 14px;
+  }
+  .menu-toggle {
+    display: inline-flex;
+  }
+  .breadcrumb > span,
+  .breadcrumb > strong {
+    display: none;
+  }
+  .command-search {
+    min-width: 0;
+  }
+  .command-search kbd,
+  .command-search > span {
+    display: none;
+  }
+  .topbar-right .icon-button,
+  .connection {
+    display: none;
+  }
+  main {
+    padding: 14px;
+  }
+  .hero-grid,
+  .analytics-grid,
+  .bottom-grid,
+  .operations-grid {
+    grid-template-columns: 1fr;
+  }
+  .asset-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .line-chart {
+    height: 220px;
+  }
+  .day-pills {
+    grid-template-columns: repeat(8, 1fr);
+  }
+  .form-row,
+  .ledger-heading,
+  .table-filters {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .table-filters select,
+  .search-field input {
+    width: 100%;
+  }
+  #accounts-table {
+    min-width: 440px;
+  }
+  .drawer-open {
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 430px) {
+  .asset-strip {
+    grid-template-columns: 1fr;
+  }
+  .balance-panel,
+  .chart-card,
+  .bar-card,
+  .activity-card,
+  .asset-flow,
+  .cashflow-card,
+  .composer,
+  .mesh-section,
+  .data-section {
+    padding: 14px;
+  }
+  .flow-board {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .flow-board svg {
+    height: 120px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+/* Lifecycle totals share the existing table section rather than adding nested panels. */
+.payment-counts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}

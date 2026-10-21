@@ -54,7 +54,7 @@ public class DemoDeviceKeyService implements ApplicationListener<ApplicationRead
     }
 
     private boolean enabled() {
-        return environment.matchesProfiles("dev | test");
+        return environment.matchesProfiles("(dev | demo | test) & !postgres");
     }
 
     @Transactional

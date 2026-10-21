@@ -79,8 +79,43 @@ class IdempotencyConcurrencyTest {
     }
 
     @Test
+    void retryClaimsHaveExactlyOneOwnerAndStaleTokensCannotFinalize() throws Exception {
+        var first = idempotency.claimProcessing("retry-race");
+        idempotency.markFailedRetryable("retry-race", first.token());
+        var pool = Executors.newFixedThreadPool(2);
+        var barrier = new java.util.concurrent.CyclicBarrier(2);
+        try {
+            java.util.concurrent.Callable<IdempotencyService.ClaimResult> attempt = () -> {
+                barrier.await(5, TimeUnit.SECONDS);
+                return idempotency.claimProcessing("retry-race");
+            };
+            var left = pool.submit(attempt);
+            var right = pool.submit(attempt);
+            var a = left.get(10, TimeUnit.SECONDS);
+            var b = right.get(10, TimeUnit.SECONDS);
+            assertEquals(1, (a.claimed() ? 1 : 0) + (b.claimed() ? 1 : 0));
+            String owner = a.claimed() ? a.token() : b.token();
+            idempotency.markRejected("retry-race", first.token());
+            assertEquals(IdempotencyService.PacketState.PROCESSING, idempotency.getState("retry-race"));
+            idempotency.markSettled("retry-race", owner);
+            idempotency.markFailedRetryable("retry-race", first.token());
+            assertEquals(IdempotencyService.PacketState.SETTLED, idempotency.getState("retry-race"));
+            assertTrue(redis.getExpire("upi:mesh:idempotency:retry-race") > 90);
+        } finally {
+            pool.shutdownNow();
+            assertTrue(pool.awaitTermination(5, TimeUnit.SECONDS));
+        }
+    }
+
+    @Test
+    void oldRetryableValuesAreAccepted() {
+        redis.opsForValue().set("upi:mesh:idempotency:legacy", "FAILED_RETRYABLE");
+        assertTrue(idempotency.claimProcessing("legacy").claimed());
+    }
+
+    @Test
     void claimsAreSharedBetweenServiceInstances() {
-        IdempotencyService otherInstance = new IdempotencyService(redis, 86400);
+        IdempotencyService otherInstance = new IdempotencyService(redis, 90, 86400);
         assertTrue(idempotency.claim("shared-packet"));
         assertFalse(otherInstance.claim("shared-packet"));
         long ttl = assertInstanceOf(Long.class, redis.getExpire("upi:mesh:idempotency:shared-packet"));
@@ -89,12 +124,30 @@ class IdempotencyConcurrencyTest {
 
     @Test
     void expiredClaimCanBeClaimedAgain() {
-        IdempotencyService shortLived = new IdempotencyService(redis, 1);
-        assertTrue(shortLived.claim("expiring-packet"));
+        IdempotencyService shortLived = new IdempotencyService(redis, 1, 86400);
+        var expiredOwner = shortLived.claimProcessing("expiring-packet");
+        assertTrue(expiredOwner.claimed());
         assertFalse(shortLived.claim("expiring-packet"));
         await().atMost(Duration.ofSeconds(5)).until(() ->
                 !Boolean.TRUE.equals(redis.hasKey("upi:mesh:idempotency:expiring-packet")));
-        assertTrue(shortLived.claim("expiring-packet"));
+        var newOwner = shortLived.claimProcessing("expiring-packet");
+        assertTrue(newOwner.claimed());
+        shortLived.markRejected("expiring-packet", expiredOwner.token());
+        assertEquals(IdempotencyService.PacketState.PROCESSING, shortLived.getState("expiring-packet"));
+        shortLived.markSettled("expiring-packet", newOwner.token());
+        assertEquals(IdempotencyService.PacketState.SETTLED, shortLived.getState("expiring-packet"));
+    }
+
+    @Test
+    void expiryIndexIsBoundedWithoutDashboardPolling() {
+        var shortLease = new IdempotencyService(redis, 1, 86400);
+        assertTrue(shortLease.claim("old-index-entry"));
+        await().atMost(Duration.ofSeconds(5)).until(() ->
+                !Boolean.TRUE.equals(redis.hasKey("upi:mesh:idempotency:old-index-entry")));
+        assertTrue(shortLease.claim("new-index-entry"));
+        assertEquals(1L, redis.opsForZSet().size("upi:mesh:packet-expirations"));
+        assertTrue(redis.getExpire("upi:mesh:packet-expirations") > 0,
+                "idle index metadata must expire too");
     }
 
     @Test

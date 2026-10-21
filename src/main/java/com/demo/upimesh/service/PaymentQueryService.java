@@ -22,7 +22,12 @@ public class PaymentQueryService {
     }
 
     public List<PaymentLifecycleResponse> recent() {
-        return payments.findTop20ByOrderByReceivedAtDescIdDesc().stream().map(this::response).toList();
+        List<Payment> recent = payments.findTop20ByOrderByReceivedAtDescIdDesc();
+        if (recent.isEmpty()) return List.of();
+        var ids = transactions.findIdsByPaymentIds(recent.stream().map(Payment::getId).toList()).stream()
+                .collect(java.util.stream.Collectors.toMap(TransactionRepository.PaymentTransaction::getPaymentId,
+                        TransactionRepository.PaymentTransaction::getTransactionId));
+        return recent.stream().map(p -> response(p, ids.get(p.getId()))).toList();
     }
 
     public PaymentLifecycleResponse find(UUID paymentId) {
@@ -30,7 +35,10 @@ public class PaymentQueryService {
     }
 
     private PaymentLifecycleResponse response(Payment p) {
-        Long transactionId = transactions.findIdByPaymentId(p.getId()).orElse(null);
+        return response(p, transactions.findIdByPaymentId(p.getId()).orElse(null));
+    }
+
+    private PaymentLifecycleResponse response(Payment p, Long transactionId) {
         return new PaymentLifecycleResponse(p.getPaymentId(), p.getPacketHash(), p.getSenderVpa(),
                 p.getReceiverVpa(), p.getAmount(), p.getStatus().name(), p.getSignedAt(), p.getReceivedAt(),
                 p.getSettledAt(), p.getFailureCode(), p.getFailureMessage(), p.getBridgeNodeId(),

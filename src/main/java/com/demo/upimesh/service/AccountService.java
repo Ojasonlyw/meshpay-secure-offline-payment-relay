@@ -17,6 +17,6 @@ public class AccountService {
     }
 
     public List<AccountResponse> listAccounts() {
-        return accounts.findAll().stream().map(mapper::toResponse).toList();
+        return accounts.findTop100ByOrderByVpaAsc().stream().map(mapper::toResponse).toList();
     }
 }

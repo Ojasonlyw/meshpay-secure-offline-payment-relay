@@ -57,9 +57,12 @@ public class BridgeIngestionService {
     public IngestResult ingest(MeshPacket packet, String bridgeNodeId, int hopCount) {
         String packetHash = "?";
         boolean claimed = false;
+        String attemptToken = null;
         boolean finalized = false;
         Payment payment = null;
         try {
+            if (bridgeNodeId == null || !bridgeNodeId.matches("[A-Za-z0-9._:-]{1,64}"))
+                throw new InvalidPacketException("Invalid bridge ID");
             String packetError = validatePacketEnvelope(packet, hopCount);
             if (packetError != null) {
                 throw new InvalidPacketException(packetError);
@@ -67,18 +70,16 @@ public class BridgeIngestionService {
 
             packetHash = crypto.hashCiphertext(packet.getCiphertext());
 
-            IdempotencyService.ClaimResult claim = idempotency.claimProcessing(packetHash);
-            if (!claim.claimed()) {
-                if (claim.state() == IdempotencyService.PacketState.SETTLED
-                        || claim.state() == IdempotencyService.PacketState.REJECTED
-                        || claim.state() == IdempotencyService.PacketState.EXPIRED) {
-                    throw new DuplicatePaymentException();
-                }
-                log.info("DUPLICATE packet {} from bridge {} dropped",
-                        packetHash.substring(0, 12) + "...", bridgeNodeId);
-                return IngestResult.duplicate(packetHash);
+            IdempotencyService.ClaimResult claim = null;
+            boolean redisAvailable = true;
+            try {
+                claim = idempotency.claimProcessing(packetHash);
+                claimed = claim.claimed();
+                attemptToken = claim.token();
+            } catch (org.springframework.dao.DataAccessException unavailable) {
+                redisAvailable = false;
+                log.warn("Replay cache unavailable for packetHash={}", packetHash);
             }
-            claimed = true;
 
             PaymentInstruction instruction;
             try {
@@ -92,9 +93,6 @@ public class BridgeIngestionService {
                 throw new InvalidPacketException(instructionError);
             }
 
-            payment = lifecycle.register(instruction, packetHash, bridgeNodeId, hopCount);
-            topology.linkPayment(packet.getPacketId(), payment.getId());
-
             long ageSeconds = (Instant.now().toEpochMilli() - instruction.getSignedAt()) / 1000;
             if (ageSeconds > maxAgeSeconds) {
                 log.warn("Packet {} too old ({}s), rejected",
@@ -106,8 +104,42 @@ public class BridgeIngestionService {
             }
 
             DeviceSignatureService.Verification verification =
-                    signatures.verifyAndRecord(payment.getId(), instruction);
+                    signatures.verify(instruction);
             if (!verification.valid()) throw new InvalidSignatureException(verification.failureCode());
+
+            var existing = lifecycle.findExisting(instruction, packetHash);
+            if (existing.isPresent() && !PaymentLifecycleService.canSettle(existing.get())) {
+                Payment stored = existing.get();
+                IdempotencyService.PacketState state = switch (stored.getStatus()) {
+                    case SETTLED -> IdempotencyService.PacketState.SETTLED;
+                    case REJECTED -> IdempotencyService.PacketState.REJECTED;
+                    case EXPIRED -> IdempotencyService.PacketState.EXPIRED;
+                    default -> null;
+                };
+                if (state != null) {
+                    if (!claimed && redisAvailable) {
+                        try { idempotency.repairTerminal(packetHash, claim, state); }
+                        catch (Exception unavailable) { log.warn("Replay cache repair unavailable"); }
+                        throw new DuplicatePaymentException();
+                    }
+                    finalized = true;
+                    if (claimed) updateState(packetHash, attemptToken, state);
+                    return new IngestResult(stored.getStatus().name(), packetHash,
+                            stored.getFailureCode(), lifecycle.transactionId(stored));
+                }
+                throw new DuplicatePaymentException();
+            }
+            if (!redisAvailable) return IngestResult.failed(packetHash, FailureReason.TEMPORARY_PROCESSING_FAILURE);
+            if (!claimed && claim.state() != IdempotencyService.PacketState.PROCESSING) {
+                claim = idempotency.reclaimAfterDatabaseCheck(packetHash, claim);
+                claimed = claim.claimed();
+                attemptToken = claim.token();
+            }
+            if (!claimed) return IngestResult.duplicate(packetHash);
+
+            payment = lifecycle.register(instruction, packetHash, bridgeNodeId, hopCount);
+            signatures.recordVerified(payment.getId(), instruction, verification);
+            topology.linkPayment(packet.getPacketId(), payment.getId());
 
             Transaction tx;
             try {
@@ -119,33 +151,38 @@ public class BridgeIngestionService {
             }
             if (tx.getStatus() == Transaction.Status.SETTLED) {
                 finalized = true;
-                updateState(packetHash, IdempotencyService.PacketState.SETTLED);
+                updateState(packetHash, attemptToken, IdempotencyService.PacketState.SETTLED);
                 return IngestResult.settled(packetHash, tx);
             }
             throw new SettlementException("Unexpected transaction status");
         } catch (DomainException e) {
-            log.error("Ingestion error for packetHash={}", packetHash, e);
+            log.error("Ingestion error packetHash={} exceptionType={}", packetHash, e.getClass().getSimpleName());
             if (payment != null && !(e instanceof DuplicatePaymentException)
-                    && !(e instanceof InsufficientBalanceException)) {
+                    && !(e instanceof InsufficientBalanceException) && !(e instanceof DeviceRevokedException)) {
                 recordFailure(payment, e);
             }
             if (claimed) {
                 if (e instanceof ExpiredPacketException) {
-                    updateState(packetHash, IdempotencyService.PacketState.EXPIRED);
+                    updateState(packetHash, attemptToken, IdempotencyService.PacketState.EXPIRED);
+                } else if (e instanceof DuplicatePaymentException) {
+                    // A later lease owner may race an earlier DB commit. Preserve its terminal result.
+                    Payment.Status stored = lifecycle.statusByHash(packetHash);
+                    updateState(packetHash, attemptToken, stored == Payment.Status.SETTLED
+                            ? IdempotencyService.PacketState.SETTLED : stored == Payment.Status.REJECTED
+                            ? IdempotencyService.PacketState.REJECTED : IdempotencyService.PacketState.FAILED_RETRYABLE);
                 } else if (e instanceof InvalidPacketException || e instanceof InvalidSignatureException
-                        || e instanceof DuplicatePaymentException
-                        || e instanceof InsufficientBalanceException) {
-                    updateState(packetHash, IdempotencyService.PacketState.REJECTED);
+                        || e instanceof InsufficientBalanceException || e instanceof DeviceRevokedException) {
+                    updateState(packetHash, attemptToken, IdempotencyService.PacketState.REJECTED);
                 } else if (!finalized) {
-                    updateState(packetHash, IdempotencyService.PacketState.FAILED_RETRYABLE);
+                    updateState(packetHash, attemptToken, IdempotencyService.PacketState.FAILED_RETRYABLE);
                 }
             }
             throw e;
         } catch (Exception e) {
-            log.error("Ingestion error for packetHash={}", packetHash, e);
+            log.error("Ingestion error packetHash={} exceptionType={}", packetHash, e.getClass().getSimpleName());
             if (payment != null && !finalized) recordFailure(payment, new SettlementException());
             if (claimed && !finalized) {
-                updateState(packetHash, IdempotencyService.PacketState.FAILED_RETRYABLE);
+                updateState(packetHash, attemptToken, IdempotencyService.PacketState.FAILED_RETRYABLE);
             }
             return IngestResult.failed(packetHash, FailureReason.PAYMENT_PROCESSING_FAILED);
         }
@@ -155,21 +192,21 @@ public class BridgeIngestionService {
         try {
             lifecycle.recordFailure(payment.getId(), payment.getVersion(), failure);
         } catch (Exception e) {
-            log.error("Payment failure persistence failed for paymentId={}", payment.getPaymentId(), e);
+            log.error("Payment failure persistence failed paymentId={} exceptionType={}", payment.getPaymentId(), e.getClass().getSimpleName());
         }
     }
 
-    private void updateState(String hash, IdempotencyService.PacketState state) {
+    private void updateState(String hash, String token, IdempotencyService.PacketState state) {
         try {
             switch (state) {
-                case SETTLED -> idempotency.markSettled(hash);
-                case REJECTED -> idempotency.markRejected(hash);
-                case EXPIRED -> idempotency.markExpired(hash);
-                case FAILED_RETRYABLE -> idempotency.markFailedRetryable(hash);
+                case SETTLED -> idempotency.markSettled(hash, token);
+                case REJECTED -> idempotency.markRejected(hash, token);
+                case EXPIRED -> idempotency.markExpired(hash, token);
+                case FAILED_RETRYABLE -> idempotency.markFailedRetryable(hash, token);
                 default -> throw new IllegalArgumentException("Unsupported state");
             }
         } catch (Exception e) {
-            log.error("Packet state update failed for packetHash={} state={}", hash, state, e);
+            log.error("Packet state update failed packetHash={} state={} exceptionType={}", hash, state, e.getClass().getSimpleName());
         }
     }
 

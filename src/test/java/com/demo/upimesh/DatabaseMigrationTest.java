@@ -64,7 +64,7 @@ class DatabaseMigrationTest {
     @Test
     void productionSchemaHasNoDemoDataAndCanBeMigratedAgain() throws Exception {
         Flyway flyway = migrate(false);
-        assertEquals(12, java.util.Arrays.stream(flyway.info().applied())
+        assertEquals(13, java.util.Arrays.stream(flyway.info().applied())
                 .filter(migration -> migration.getVersion() != null).count());
         try (Connection connection = connect(flyway)) {
             assertEquals(0, count(connection, "SELECT count(*) FROM accounts"));
@@ -80,7 +80,7 @@ class DatabaseMigrationTest {
     @Test
     void demoSeedAndMigrationRerunsPreserveBalances() throws Exception {
         Flyway flyway = migrate(true);
-        assertEquals(14, java.util.Arrays.stream(flyway.info().applied())
+        assertEquals(15, java.util.Arrays.stream(flyway.info().applied())
                 .filter(migration -> migration.getVersion() != null).count());
         try (Connection connection = connect(flyway)) {
             assertEquals(5, count(connection, "SELECT count(*) FROM accounts"));

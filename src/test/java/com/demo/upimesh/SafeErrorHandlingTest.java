@@ -36,6 +36,7 @@ class SafeErrorHandlingTest {
     private MockMvc mvc;
     private ValidatorFactory validators;
     private MeshPacket packet;
+    private PaymentLifecycleService lifecycle;
     private PaymentInstruction instruction;
     private final String hash = "a".repeat(64);
 
@@ -48,8 +49,9 @@ class SafeErrorHandlingTest {
         topology = mock(MeshTopologyService.class);
         mesh = mock(MeshSimulatorService.class);
         validators = Validation.buildDefaultValidatorFactory();
+        lifecycle = lifecycle();
         bridge = new BridgeIngestionService(crypto, idempotency, settlement,
-                validators.getValidator(), lifecycle(), signatures, topology, 86400L, 10, 10, 16384);
+                validators.getValidator(), lifecycle, signatures, topology, 86400L, 10, 10, 16384);
         BridgeController bridgeController = new BridgeController(new BridgeService(bridge, new BridgeMapper()));
         MeshController meshController = new MeshController(
                 new MeshService(mesh, bridge, idempotency, new MeshMapper(), topology));
@@ -66,9 +68,9 @@ class SafeErrorHandlingTest {
         when(crypto.hashCiphertext(anyString())).thenReturn(hash);
         when(crypto.decrypt(anyString())).thenReturn(instruction);
         when(idempotency.claimProcessing(hash)).thenReturn(
-                new IdempotencyService.ClaimResult(true, IdempotencyService.PacketState.PROCESSING));
-        when(signatures.verifyAndRecord(anyLong(), any())).thenReturn(
-                new DeviceSignatureService.Verification(true, null));
+                new IdempotencyService.ClaimResult(true, IdempotencyService.PacketState.PROCESSING, "attempt"));
+        when(signatures.verify(any())).thenReturn(
+                new DeviceSignatureService.Verification(true, null, 1L, "fingerprint"));
     }
 
     private PaymentLifecycleService lifecycle() {
@@ -122,42 +124,70 @@ class SafeErrorHandlingTest {
         assertEquals("PAYMENT_PROCESSING_FAILED", body.get("reason").asText());
         assertTrue(body.get("transactionId").isNull());
         safe(result);
-        verify(idempotency, never()).markFailedRetryable(anyString());
+        verify(idempotency, never()).markFailedRetryable(anyString(), anyString());
     }
 
     @Test void invalidPacket() throws Exception {
         packet.setTtl(11);
-        error(ingest(), 400, "INVALID_PACKET");
+        error(ingest(), 400, "VALIDATION_FAILED");
+        assertThrows(InvalidPacketException.class, () -> bridge.ingest(packet, "bridge", 1));
         verifyNoInteractions(idempotency);
     }
 
     @Test void invalidSignatureAndSecondaryRedisFailure() throws Exception {
         when(crypto.decrypt(anyString())).thenThrow(new Exception(SECRET));
-        doThrow(new RuntimeException(SECRET)).when(idempotency).markRejected(hash);
+        doThrow(new RuntimeException(SECRET)).when(idempotency).markRejected(hash, "attempt");
         error(ingest(), 400, "INVALID_SIGNATURE");
-        verify(idempotency, never()).markFailedRetryable(anyString());
+        verify(idempotency, never()).markFailedRetryable(anyString(), anyString());
     }
 
     @Test void expiredPacket() throws Exception {
         instruction.setSignedAt(System.currentTimeMillis() - 86401000L);
         error(ingest(), 400, "PACKET_EXPIRED");
-        verify(idempotency).markExpired(hash);
+        verify(idempotency).markExpired(hash, "attempt");
     }
 
     @Test void finalizedDuplicates() throws Exception {
         for (var state : List.of(IdempotencyService.PacketState.SETTLED,
                 IdempotencyService.PacketState.REJECTED, IdempotencyService.PacketState.EXPIRED)) {
-            when(idempotency.claimProcessing(hash)).thenReturn(new IdempotencyService.ClaimResult(false, state));
+            when(idempotency.claimProcessing(hash)).thenReturn(new IdempotencyService.ClaimResult(false, state, null));
+            Payment terminal = new Payment();
+            terminal.setStatus(Payment.Status.valueOf(state.name()));
+            when(lifecycle.findExisting(any(), eq(hash))).thenReturn(Optional.of(terminal));
             error(ingest(), 409, "DUPLICATE_PAYMENT");
         }
-        verify(idempotency, never()).markFailedRetryable(anyString());
+        verify(idempotency, never()).markFailedRetryable(anyString(), anyString());
         verifyNoInteractions(settlement);
     }
 
     @Test void inFlightDuplicatePreservesResult() throws Exception {
         when(idempotency.claimProcessing(hash)).thenReturn(
-                new IdempotencyService.ClaimResult(false, IdempotencyService.PacketState.PROCESSING));
+                new IdempotencyService.ClaimResult(false, IdempotencyService.PacketState.PROCESSING, "attempt"));
         assertEquals("DUPLICATE", json.readTree(ingest().getResponse().getContentAsString()).get("outcome").asText());
+    }
+
+    @Test void redisUnavailableFailsRetryablyWithoutRegisteringPayment() throws Exception {
+        when(idempotency.claimProcessing(hash)).thenThrow(
+                new org.springframework.dao.DataAccessResourceFailureException(SECRET));
+        var result = json.readTree(ingest().getResponse().getContentAsString());
+        assertEquals("FAILED", result.get("outcome").asText());
+        assertEquals("TEMPORARY_PROCESSING_FAILURE", result.get("reason").asText());
+        verify(lifecycle, never()).register(any(), anyString(), anyString(), anyInt());
+        verifyNoInteractions(settlement);
+    }
+
+    @Test void redisUnavailableReturnsExistingDatabaseReceipt() throws Exception {
+        when(idempotency.claimProcessing(hash)).thenThrow(
+                new org.springframework.dao.DataAccessResourceFailureException(SECRET));
+        Payment terminal = new Payment();
+        terminal.setStatus(Payment.Status.SETTLED);
+        when(lifecycle.findExisting(any(), eq(hash))).thenReturn(Optional.of(terminal));
+        when(lifecycle.transactionId(terminal)).thenReturn(42L);
+        var result = ingest();
+        safe(result);
+        assertEquals("SETTLED", json.readTree(result.getResponse().getContentAsString()).get("outcome").asText());
+        assertEquals(42L, json.readTree(result.getResponse().getContentAsString()).get("transactionId").asLong());
+        verifyNoInteractions(settlement);
     }
 
     @Test void settlementDomainMappings() throws Exception {
@@ -171,7 +201,7 @@ class SafeErrorHandlingTest {
 
     @Test void settlementFailureWithSecondaryRedisFailure() throws Exception {
         when(settlement.settle(any(), anyString(), anyString(), anyInt())).thenThrow(new RuntimeException(SECRET));
-        doThrow(new RuntimeException(SECRET)).when(idempotency).markFailedRetryable(hash);
+        doThrow(new RuntimeException(SECRET)).when(idempotency).markFailedRetryable(hash, "attempt");
         error(ingest(), 500, "SETTLEMENT_FAILED");
     }
 
@@ -179,11 +209,11 @@ class SafeErrorHandlingTest {
         Transaction tx = new Transaction();
         tx.setStatus(Transaction.Status.SETTLED);
         when(settlement.settle(any(), anyString(), anyString(), anyInt())).thenReturn(tx);
-        doThrow(new RuntimeException(SECRET)).when(idempotency).markSettled(hash);
+        doThrow(new RuntimeException(SECRET)).when(idempotency).markSettled(hash, "attempt");
         var body = json.readTree(ingest().getResponse().getContentAsString());
         assertEquals("SETTLED", body.get("outcome").asText());
         assertTrue(body.get("reason").isNull());
-        verify(idempotency, never()).markFailedRetryable(anyString());
+        verify(idempotency, never()).markFailedRetryable(anyString(), anyString());
     }
 
     @Test void requestValidationAndMalformedJson() throws Exception {
@@ -223,8 +253,9 @@ class SafeErrorHandlingTest {
             assertTrue(events.stream().anyMatch(event ->
                     "test-trace".equals(event.getMDCPropertyMap().get("traceId"))
                     && event.getFormattedMessage().contains(hash)
-                    && event.getThrowableProxy() != null
-                    && SECRET.equals(event.getThrowableProxy().getMessage())));
+                    && event.getThrowableProxy() == null
+                    && !event.getFormattedMessage().contains(SECRET)
+                    && event.getFormattedMessage().contains("RuntimeException")));
             safe(result);
         } finally {
             logger.detachAppender(appender);

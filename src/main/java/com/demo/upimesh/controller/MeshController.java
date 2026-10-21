@@ -2,7 +2,6 @@ package com.demo.upimesh.controller;
 
 import com.demo.upimesh.dto.response.MeshFlushResponse;
 import com.demo.upimesh.dto.response.MeshGossipResponse;
-import com.demo.upimesh.dto.response.MeshResetResponse;
 import com.demo.upimesh.dto.response.MeshStateResponse;
 import com.demo.upimesh.service.MeshService;
 import com.demo.upimesh.dto.request.MeshConnectionRequest;
@@ -40,11 +39,6 @@ public class MeshController {
     @PostMapping("/mesh/flush")
     public MeshFlushResponse flush() {
         return mesh.flush();
-    }
-
-    @PostMapping("/mesh/reset")
-    public MeshResetResponse reset() {
-        return mesh.reset();
     }
 
     @PostMapping("/mesh/connections")

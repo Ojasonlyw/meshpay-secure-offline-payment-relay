@@ -25,8 +25,8 @@ public class BridgeController {
 
     @PostMapping("/bridge/ingest")
     public BridgeIngestResponse ingest(@Valid @RequestBody BridgeIngestRequest request,
-            @NotBlank @RequestHeader(value = "X-Bridge-Node-Id", defaultValue = "unknown") String bridgeNodeId,
-            @Min(0) @RequestHeader(value = "X-Hop-Count", defaultValue = "0") int hopCount) {
+            @NotBlank @jakarta.validation.constraints.Size(max = 64) @RequestHeader(value = "X-Bridge-Node-Id", defaultValue = "unknown") String bridgeNodeId,
+            @Min(0) @jakarta.validation.constraints.Max(10) @RequestHeader(value = "X-Hop-Count", defaultValue = "0") int hopCount) {
         return bridge.ingest(request, bridgeNodeId, hopCount);
     }
 }

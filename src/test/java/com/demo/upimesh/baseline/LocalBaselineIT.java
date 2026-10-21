@@ -102,7 +102,8 @@ class LocalBaselineIT {
             long entriesBefore = count("ledger_entries");
             BigDecimal balanceBefore = balance("alice@demo");
             Reply duplicate = timed("duplicate-flush", "POST", "/api/mesh/flush", null, 200, record);
-            assertEquals("DUPLICATE", duplicate.body().at("/results/0/outcome").asText());
+            assertEquals(0, duplicate.body().path("uploadsAttempted").asInt());
+            assertTrue(duplicate.body().path("results").isEmpty());
             assertEquals(entriesBefore, count("ledger_entries"));
             assertEquals(balanceBefore, balance("alice@demo"));
 

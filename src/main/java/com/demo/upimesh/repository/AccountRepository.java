@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.math.BigDecimal;
 
 public interface AccountRepository extends JpaRepository<Account, String> {
+    java.util.List<Account> findTop100ByOrderByVpaAsc();
     @Query("select coalesce(sum(a.balance), 0) from Account a")
     BigDecimal totalBalance();
 }

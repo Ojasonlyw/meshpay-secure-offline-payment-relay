@@ -1,0 +1,62 @@
+{
+  "failures": 0,
+  "states": 32,
+  "staticPixelTolerance": 0,
+  "historicalNativeDifferences": [
+    {
+      "name": "1440-invalid",
+      "pixels": 5418
+    },
+    {
+      "name": "1280-invalid",
+      "pixels": 5794
+    },
+    {
+      "name": "1024-invalid",
+      "pixels": 6124
+    },
+    {
+      "name": "768-invalid",
+      "pixels": 5834
+    },
+    {
+      "name": "430-invalid",
+      "pixels": 2121
+    },
+    {
+      "name": "360-invalid",
+      "pixels": 753025
+    }
+  ],
+  "validation": {
+    "sourceRevision": "89a459d",
+    "baseURL": "http://meshpay.local:8080",
+    "results": [
+      {
+        "width": 1440,
+        "pixels": 0
+      },
+      {
+        "width": 1280,
+        "pixels": 0
+      },
+      {
+        "width": 1024,
+        "pixels": 0
+      },
+      {
+        "width": 768,
+        "pixels": 0
+      },
+      {
+        "width": 430,
+        "pixels": 0
+      },
+      {
+        "width": 360,
+        "pixels": 0
+      }
+    ]
+  },
+  "policy": "26 locked screenshots + 6 settled invalid DOM comparisons; all 32 retained computed-style states. Historical native popover composites are reported, never replaced."
+}

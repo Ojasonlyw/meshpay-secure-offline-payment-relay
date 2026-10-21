@@ -1,0 +1,34 @@
+{
+  "name": "meshpay-frontend-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "baseline": "node capture-baseline.mjs baseline",
+    "cleanup": "node capture-baseline.mjs cleanup",
+    "visual": "node compare.mjs",
+    "visual:historical-strict": "node compare.mjs --historical-strict",
+    "lint": "node lint.mjs",
+    "format": "prettier --write ../src/main/resources/static/js ../src/main/resources/static/css ../src/main/resources/templates *.mjs tests package.json .prettierrc.json .stylelintrc.json compose.yaml ../.github/workflows/frontend.yml",
+    "format:check": "prettier --check ../src/main/resources/static/js ../src/main/resources/static/css ../src/main/resources/templates *.mjs tests package.json .prettierrc.json .stylelintrc.json compose.yaml ../.github/workflows/frontend.yml",
+    "test": "node --test tests/*.test.mjs",
+    "e2e": "playwright test",
+    "lighthouse": "node lighthouse.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint-scope": "9.1.2",
+    "postcss": "8.5.29",
+    "@playwright/test": "1.63.0",
+    "@axe-core/playwright": "4.11.1",
+    "acorn": "8.19.0",
+    "eslint": "10.12.0",
+    "eslint-plugin-no-unsanitized": "4.1.5",
+    "globals": "17.13.0",
+    "lighthouse": "13.5.0",
+    "pixelmatch": "7.1.0",
+    "parse5": "7.3.0",
+    "pngjs": "7.0.0",
+    "prettier": "3.9.9",
+    "stylelint": "17.16.0"
+  }
+}
